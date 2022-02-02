@@ -2,8 +2,9 @@ import type {NextPage} from 'next'
 import Head from 'next/head'
 import {Button, Col, Form, Input, Row, Slider, Space, Switch} from "antd";
 import {Dispatch, FC, RefObject, SetStateAction, useCallback, useEffect, useRef, useState} from "react";
+import Image from 'next/image';
 import debounce from 'lodash.debounce';
-import {Caman, CamanInstance} from '../types/Caman';
+import {CamanInstance} from '../types/Caman';
 
 type FilterArgNumber = {
     min: number, max: number, default?: number
@@ -44,31 +45,15 @@ const delta100: FilterArgNumber = {
 };
 
 const filterArgConfig: FilterArgConfig = {
-    brightness: delta200,
-    channels: {
+    brightness: delta200, channels: {
         red: delta200, green: delta200, blue: delta200
-    },
-    clip: delta100,
-    colorize: [{default: ''}, delta100],
-    contrast: delta200,
-    exposure: delta200, // TODO: add filter arg
-    fillColor: {default: ''},
-    gamma: {
+    }, clip: delta100, colorize: [{default: ''}, delta100], contrast: delta200, exposure: delta200, // TODO: add filter arg
+    fillColor: {default: ''}, gamma: {
         min: 0, max: 5, default: 1,
-    },
-    greyscale: {default: false},
-    hue: delta100,
-    invert: {default: false},
-    noise: {
+    }, greyscale: {default: false}, hue: delta100, invert: {default: false}, noise: {
         min: 0, max: 100, default: 0
-    },
-    saturation: delta200,
-    sepia: delta100,
-    vibrance: delta200,
-    stackBlur: {
-        min: 0,
-        max: 50,
-        default: 0
+    }, saturation: delta200, sepia: delta100, vibrance: delta200, stackBlur: {
+        min: 0, max: 50, default: 0
     },
 }
 
@@ -86,11 +71,11 @@ type ValueConfig = {
 }
 
 const layout = {
-    labelCol: {span: 8}, wrapperCol: {span: 16},
+    labelCol: {span: 4}, wrapperCol: {span: 18},
 };
 
 const tailLayout = {
-    wrapperCol: {offset: 8, span: 16},
+    wrapperCol: {offset: 4, span: 18},
 };
 
 const DynamicField: FC<{ name: string, config: FilterArg, value: unknown }> = ({name, config, value}) => {
@@ -109,18 +94,27 @@ const DynamicField: FC<{ name: string, config: FilterArg, value: unknown }> = ({
     }
 
     if (typeof config.default === 'number') {
+        const max = (argConfig as FilterArgNumber).max;
+        const min = (argConfig as FilterArgNumber).min;
+        const step = max / 100;
+        // const marks = Array.from({length: max / 10}).map((a,i) => {
+        //
+        // })
+        const total = min > max ? min - max : max - min;
+        const markCount = 5;
+        const markStep = total / markCount;
+        const marks = Array.from({length: markCount - 1}).reduce<Record<string, string>>((acc, _, i) => {
+            const relativeMarker = markStep * (i + 1);
+            const marker = min < 0 ? relativeMarker + min : relativeMarker - min;
+            acc[marker] = String(marker);
+            return acc;
+        }, {})
         return <Form.Item name={name} label={name}>
-            <Slider min={(argConfig as FilterArgNumber).min}
-                    max={(argConfig as FilterArgNumber).max}
+            <Slider min={min}
+                    max={max}
                     defaultValue={Number(value) || (argConfig as FilterArgNumber).default}
-                // marks={{
-                //     0: 'A',
-                //     20: 'B',
-                //     40: 'C',
-                //     60: 'D',
-                //     80: 'E',
-                //     100: 'F',
-                // }}
+                    step={step}
+                    marks={marks}
             />
         </Form.Item>
     }
@@ -128,11 +122,11 @@ const DynamicField: FC<{ name: string, config: FilterArg, value: unknown }> = ({
     return null;
 }
 
-const ParameterForm: FC<{ downloadImgButtonRef: RefObject<HTMLAnchorElement> ,userValues: Partial<ValueConfig>, setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>> }> = ({
-                                                                                                                                userValues,
-                                                                                                                                setConfig,
-    downloadImgButtonRef
-                                                                                                                            }) => {
+const ParameterForm: FC<{ downloadImgButtonRef: RefObject<HTMLAnchorElement>, userValues: Partial<ValueConfig>, setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>> }> = ({
+                                                                                                                                                                                    userValues,
+                                                                                                                                                                                    setConfig,
+                                                                                                                                                                                    downloadImgButtonRef
+                                                                                                                                                                                }) => {
     const [form] = Form.useForm<ValueConfig>();
     const onFinish = (values: any) => {
         console.log(values);
@@ -146,23 +140,7 @@ const ParameterForm: FC<{ downloadImgButtonRef: RefObject<HTMLAnchorElement> ,us
 
     return (
         <Form {...layout} form={form} name="control-hooks" onValuesChange={debounce((field, all) => onFinish(all), 200)}
-              onFinish={onFinish}>
-            {/*return (<Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>*/}
-            {/*<Form.Item name="switch" label="Switch" required={true}>*/}
-            {/*    <Switch/>*/}
-            {/*</Form.Item>*/}
-            {/*<Form.Item name="slider" label="Slider">*/}
-            {/*    <Slider*/}
-            {/*        // marks={{*/}
-            {/*        //     0: 'A',*/}
-            {/*        //     20: 'B',*/}
-            {/*        //     40: 'C',*/}
-            {/*        //     60: 'D',*/}
-            {/*        //     80: 'E',*/}
-            {/*        //     100: 'F',*/}
-            {/*        // }}*/}
-            {/*    />*/}
-            {/*</Form.Item>*/}
+        >
             {Object.entries(filterArgConfig).map(([name, config]) => {
                 if (Array.isArray(config)) {
                     //
@@ -171,35 +149,34 @@ const ParameterForm: FC<{ downloadImgButtonRef: RefObject<HTMLAnchorElement> ,us
                 } else return <DynamicField name={name} config={config} value={userValues[name]}/>
             })}
             <Form.Item {...tailLayout}>
-                <Button type="primary" htmlType="submit">
-                    Submit
-                </Button>
                 <Button htmlType="button" onClick={onReset}>
                     Reset
                 </Button>
-                <a ref={downloadImgButtonRef}>Download</a>
-                {/*<Button type="link" htmlType="button" onClick={onFill}>*/}
-                {/*    Fill form*/}
-                {/*</Button>*/}
+                <Button>
+                    <a ref={downloadImgButtonRef}>Download</a>
+                </Button>
             </Form.Item>
         </Form>);
 }
 
 function PictureTest() {
     const [config, setConfig] = useState<Partial<ValueConfig>>({})
+    const [isLoading ,setIsLoading]= useState<boolean>(false)
     const [currentImage, setCurrentImage] = useState<string>('/01.jpg');
     const imgId = `img${currentImage.slice(1, 3)}`;
     console.log({imgId})
     const downloadImgButtonRef = useRef<HTMLAnchorElement>(null);
     const camanRef = useRef<CamanInstance>();
+
+    console.log({isLoading});
     const handleButtonClick = useCallback(() => {
         if (window?.Caman) {
-            // window.Caman(`#${imgId}`, function () {
-            // camanRef.current = window.Caman(`#${imgId}`, currentImage, function () {
+            setIsLoading(true);
             camanRef.current = window.Caman(`#target`, currentImage, function () {
-            // window.Caman(`#canvaa`, function () {
+                // window.Caman(`#canvaa`, function () {
                 this.reloadCanvasData();
-                this.reset();
+                // this.reset();
+                this.revert(false);
                 console.log(this);
 
                 // Event.types = ["processStart", "processComplete", "renderStart", "renderFinished", "blockStarted", "blockFinished"];
@@ -218,96 +195,87 @@ function PictureTest() {
                         this[filter](val)
                     }
                 })
-                // this.invert(true);
 
-
-
-                this.render(
-                    () => {
-                        const downloadButton = downloadImgButtonRef.current;
-                        if (downloadButton) {
-                            downloadButton.href = this.toBase64();
-                            downloadButton.download = Date.now() + 'img.png';
-                            console.log(this.toBase64())
-                        }
-                    }
-                );
-
-
-                // this.brightness(10).contrast(20).noise(50).render(function () {
-                //     alert("Done!");
-                // });
-                // this.newLayer(function () {
-                //     // There are many blending modes, more below.
-                //     this.setBlendingMode('multiply');
-                //     this.opacity(10);
-                //     this.copyParent();
                 //
-                //     this.filter.gamma(0.8);
-                //     this.filter.contrast(50);
+                // this.newLayer(function() {
                 //
-                //     /*
-                //      * Yep, you can stack multiple layers! The further a layer is nested, the higher up on the layer
-                //      * stack it will be.
-                //      */
-                //     this.newLayer(function () {
-                //         this.setBlendingMode('softLight');
-                //         this.opacity(10);
-                //         this.fillColor('#f49600');
-                //     });
                 //
-                //     this.filter.exposure(10);
-                // });
-                // this.newLayer(function () {
-                //     this.setBlendingMode('softLight');
+                //     this.setBlendingMode('normal');
                 //     this.opacity(50);
+                //     this.overlayImage("/00.jpg")
+                //     Object.entries(config).forEach(([filter, rawVal]) => {
+                //         const val = rawVal ?? getDefaultFilterValue(filter)
+                //         if (Array.isArray(val)) {
+                //             console.log('arr', val);
+                //             this.filter[filter](...val)
+                //         } else if (typeof val === 'boolean') {
+                //             if (val) this.filter[filter]();
+                //         } else if (typeof val === 'string') {
+                //             if (val) this.filter[filter](val);
+                //         } else {
+                //             console.log('val', val);
+                //             this.filter[filter](val)
+                //         }
+                //     })
                 //
-                //     this.overlayImage('/02.jpg');
-                // });
+                //     this.newLayer(function() {
                 //
-                // this.exposure(20);
-                // this.gamma(0.8);
+                //
+                //         this.setBlendingMode('exclusion');
+                //         this.opacity(50);
+                //         this.overlayImage("/01.jpg")
+                //         Object.entries(config).forEach(([filter, rawVal]) => {
+                //             const val = rawVal ?? getDefaultFilterValue(filter)
+                //             if (Array.isArray(val)) {
+                //                 console.log('arr', val);
+                //                 this.filter[filter](...val)
+                //             } else if (typeof val === 'boolean') {
+                //                 if (val) this.filter[filter]();
+                //             } else if (typeof val === 'string') {
+                //                 if (val) this.filter[filter](val);
+                //             } else {
+                //                 console.log('val', val);
+                //                 this.filter[filter](val)
+                //             }
+                //         })
+                //
+                //         // this.fillColor('#f49600');
+                //         // this.invert(true);
+                //     })
+                //
+                //     // this.fillColor('#f49600');
+                //     // this.invert(true);
+                // })
+
+
+                this.render(() => {
+                    const downloadButton = downloadImgButtonRef.current;
+                    if (downloadButton) {
+                        downloadButton.href = this.toBase64();
+                        downloadButton.download = Date.now() + 'img.png';
+                        console.log(this.toBase64())
+                        setIsLoading(false);
+                    }
+                });
             })
         }
-    }, [config, currentImage, imgId])
+    }, [config, currentImage])
 
     function changeImage(newSrc: string) {
-        // imgRef.current!.removeAttribute('data-caman-id');
         const canv = document.getElementById('target')!;
         canv.removeAttribute('data-caman-id');
-        // imgRef.current = canv!;
-        console.log(canv)
-        // const canv = document.createElement('canvas');
-        // const newId = `img${newSrc.slice(1, 3)}`
-        // containerRef.current!.firstChild!.remove();
-        // containerRef.current!.appendChild(canv);
         setCurrentImage(newSrc);
-        // imgRef.current = document.querySelector('canvas')!
-        // handleButtonClick();
-
-        // camanRef.current!.initCanvas();
-        // camanRef.current!.replaceCanvas(imgRef.current);
     }
 
     useEffect(() => {
-        // console.log(imgRef.current, imgRef.current!.attributes)
-        // changeImage();
         handleButtonClick();
     }, [currentImage, handleButtonClick])
-
-    // useEffect(() => {
-    //     handleButtonClick();
-    // }, [config, handleButtonClick])
 
     return <Row style={{width: '100vw'}} align={"middle"} justify={"center"} gutter={48}>
         <Col xs={24} sm={12}>
             <Space direction={"horizontal"}>
-                <img src={currentImage}/>
-                {/*<img ref={imgRef} id={imgId} src={currentImage}/>*/}
-                {/*<div ref={containerRef}>*/}
-                {/*    <canvas id={imgId} />*/}
-                {/*</div>*/}
-                <canvas id={'target'} />
+                <img src={currentImage} width={300}/>
+                <canvas id={'target'}/>
             </Space>
         </Col>
         <Col xs={24} sm={12}>
