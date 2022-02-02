@@ -48,11 +48,10 @@ const filterArgConfig: FilterArgConfig = {
         red: delta200, green: delta200, blue: delta200
     },
     clip: delta100,
-    colorize: [{default: '#ffffff'}, delta100],
+    colorize: [{default: ''}, delta100],
     contrast: delta200,
     exposure: delta200, // TODO: add filter arg
-    // fillColor: {default: '#ffffff'},
-    // fillColor: {default: ''},
+    fillColor: {default: ''},
     gamma: {
         min: 0, max: 5, default: 1,
     },
@@ -196,6 +195,8 @@ function PictureTest() {
                         this[filter](...val)
                     } else if (typeof val === 'boolean') {
                         if (val) this[filter]();
+                    } else if (typeof val === 'string') {
+                        if (val) this[filter](val);
                     } else {
                         console.log('val', val);
                         this[filter](val)
