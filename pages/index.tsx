@@ -162,7 +162,7 @@ const ParameterForm: FC<{ downloadImgButtonRef: RefObject<HTMLAnchorElement>, us
 function PictureTest() {
     const [config, setConfig] = useState<Partial<ValueConfig>>({})
     const [isLoading ,setIsLoading]= useState<boolean>(false)
-    const [currentImage, setCurrentImage] = useState<string>('/01.jpg');
+    const [currentImage, setCurrentImage] = useState<string>('');
     const imgId = `img${currentImage.slice(1, 3)}`;
     console.log({imgId})
     const downloadImgButtonRef = useRef<HTMLAnchorElement>(null);
@@ -170,7 +170,7 @@ function PictureTest() {
 
     console.log({isLoading});
     const handleButtonClick = useCallback(() => {
-        if (window?.Caman) {
+        if (currentImage && window?.Caman) {
             setIsLoading(true);
             camanRef.current = window.Caman(`#target`, currentImage, function () {
                 // window.Caman(`#canvaa`, function () {
@@ -262,8 +262,8 @@ function PictureTest() {
     }, [config, currentImage])
 
     function changeImage(newSrc: string) {
-        const canv = document.getElementById('target')!;
-        canv.removeAttribute('data-caman-id');
+        const canv = document.getElementById('target');
+        canv?.removeAttribute('data-caman-id');
         setCurrentImage(newSrc);
     }
 
@@ -273,15 +273,15 @@ function PictureTest() {
 
     return <Row style={{width: '100vw'}} align={"middle"} justify={"center"} gutter={48}>
         <Col xs={24} sm={12}>
-            <Space direction={"horizontal"}>
+            {currentImage ? <Space direction={"horizontal"}>
                 <img src={currentImage} width={300}/>
                 <canvas id={'target'}/>
-            </Space>
+            </Space> : <Space style={{textAlign: "center"}} align={"center"}>Please upload your images</Space>}
         </Col>
         <Col xs={24} sm={12}>
             <ParameterForm downloadImgButtonRef={downloadImgButtonRef} userValues={config} setConfig={setConfig}/>
         </Col>
-        <Col span={24}>
+        <Col span={24} style={{"flexWrap": "wrap"}}>
             {Array.from({length: 25}).map((_, i) => {
                 const src = `/${i < 10 ? '0' + i : i}.jpg`;
                 return <img style={{width: 100, height: 100}} key={src} alt={src} src={src}
