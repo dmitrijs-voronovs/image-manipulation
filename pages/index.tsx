@@ -1,8 +1,9 @@
 import type {NextPage} from 'next'
 import Head from 'next/head'
 import {Button, Col, Form, Input, Row, Slider, Space, Switch} from "antd";
-import {Dispatch, FC, SetStateAction, useCallback, useEffect, useState} from "react";
+import {Dispatch, FC, RefObject, SetStateAction, useCallback, useEffect, useRef, useState} from "react";
 import debounce from 'lodash.debounce';
+import {Caman, CamanInstance} from '../types/Caman';
 
 type FilterArgNumber = {
     min: number, max: number, default?: number
@@ -127,9 +128,10 @@ const DynamicField: FC<{ name: string, config: FilterArg, value: unknown }> = ({
     return null;
 }
 
-const ParameterForm: FC<{ userValues: Partial<ValueConfig>, setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>> }> = ({
+const ParameterForm: FC<{ downloadImgButtonRef: RefObject<HTMLAnchorElement> ,userValues: Partial<ValueConfig>, setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>> }> = ({
                                                                                                                                 userValues,
-                                                                                                                                setConfig
+                                                                                                                                setConfig,
+    downloadImgButtonRef
                                                                                                                             }) => {
     const [form] = Form.useForm<ValueConfig>();
     const onFinish = (values: any) => {
@@ -142,51 +144,65 @@ const ParameterForm: FC<{ userValues: Partial<ValueConfig>, setConfig: Dispatch<
         setConfig({})
     };
 
-    return (<Form {...layout} form={form} name="control-hooks" onValuesChange={debounce((field, all) => onFinish(all), 200)} onFinish={onFinish}>
-    {/*return (<Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>*/}
-        {/*<Form.Item name="switch" label="Switch" required={true}>*/}
-        {/*    <Switch/>*/}
-        {/*</Form.Item>*/}
-        {/*<Form.Item name="slider" label="Slider">*/}
-        {/*    <Slider*/}
-        {/*        // marks={{*/}
-        {/*        //     0: 'A',*/}
-        {/*        //     20: 'B',*/}
-        {/*        //     40: 'C',*/}
-        {/*        //     60: 'D',*/}
-        {/*        //     80: 'E',*/}
-        {/*        //     100: 'F',*/}
-        {/*        // }}*/}
-        {/*    />*/}
-        {/*</Form.Item>*/}
-        {Object.entries(filterArgConfig).map(([name, config]) => {
-            if (Array.isArray(config)) {
-                //
-            } else if (config === 'object') {
+    return (
+        <Form {...layout} form={form} name="control-hooks" onValuesChange={debounce((field, all) => onFinish(all), 200)}
+              onFinish={onFinish}>
+            {/*return (<Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>*/}
+            {/*<Form.Item name="switch" label="Switch" required={true}>*/}
+            {/*    <Switch/>*/}
+            {/*</Form.Item>*/}
+            {/*<Form.Item name="slider" label="Slider">*/}
+            {/*    <Slider*/}
+            {/*        // marks={{*/}
+            {/*        //     0: 'A',*/}
+            {/*        //     20: 'B',*/}
+            {/*        //     40: 'C',*/}
+            {/*        //     60: 'D',*/}
+            {/*        //     80: 'E',*/}
+            {/*        //     100: 'F',*/}
+            {/*        // }}*/}
+            {/*    />*/}
+            {/*</Form.Item>*/}
+            {Object.entries(filterArgConfig).map(([name, config]) => {
+                if (Array.isArray(config)) {
+                    //
+                } else if (config === 'object') {
 
-            } else return <DynamicField name={name} config={config} value={userValues[name]}/>
-        })}
-        <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit">
-                Submit
-            </Button>
-            <Button htmlType="button" onClick={onReset}>
-                Reset
-            </Button>
-            {/*<Button type="link" htmlType="button" onClick={onFill}>*/}
-            {/*    Fill form*/}
-            {/*</Button>*/}
-        </Form.Item>
-    </Form>);
+                } else return <DynamicField name={name} config={config} value={userValues[name]}/>
+            })}
+            <Form.Item {...tailLayout}>
+                <Button type="primary" htmlType="submit">
+                    Submit
+                </Button>
+                <Button htmlType="button" onClick={onReset}>
+                    Reset
+                </Button>
+                <a ref={downloadImgButtonRef}>Download</a>
+                {/*<Button type="link" htmlType="button" onClick={onFill}>*/}
+                {/*    Fill form*/}
+                {/*</Button>*/}
+            </Form.Item>
+        </Form>);
 }
 
 function PictureTest() {
     const [config, setConfig] = useState<Partial<ValueConfig>>({})
+    const [currentImage, setCurrentImage] = useState<string>('/01.jpg');
+    const imgId = `img${currentImage.slice(1, 3)}`;
+    console.log({imgId})
+    const downloadImgButtonRef = useRef<HTMLAnchorElement>(null);
+    const camanRef = useRef<CamanInstance>();
     const handleButtonClick = useCallback(() => {
         if (window?.Caman) {
-            window.Caman("#img1", function () {
+            // window.Caman(`#${imgId}`, function () {
+            // camanRef.current = window.Caman(`#${imgId}`, currentImage, function () {
+            camanRef.current = window.Caman(`#target`, currentImage, function () {
+            // window.Caman(`#canvaa`, function () {
+                this.reloadCanvasData();
                 this.reset();
                 console.log(this);
+
+                // Event.types = ["processStart", "processComplete", "renderStart", "renderFinished", "blockStarted", "blockFinished"];
 
                 Object.entries(config).forEach(([filter, rawVal]) => {
                     const val = rawVal ?? getDefaultFilterValue(filter)
@@ -204,7 +220,19 @@ function PictureTest() {
                 })
                 // this.invert(true);
 
-                this.render();
+
+
+                this.render(
+                    () => {
+                        const downloadButton = downloadImgButtonRef.current;
+                        if (downloadButton) {
+                            downloadButton.href = this.toBase64();
+                            downloadButton.download = Date.now() + 'img.png';
+                            console.log(this.toBase64())
+                        }
+                    }
+                );
+
 
                 // this.brightness(10).contrast(20).noise(50).render(function () {
                 //     alert("Done!");
@@ -241,19 +269,56 @@ function PictureTest() {
                 // this.gamma(0.8);
             })
         }
-    }, [config])
+    }, [config, currentImage, imgId])
+
+    function changeImage(newSrc: string) {
+        // imgRef.current!.removeAttribute('data-caman-id');
+        const canv = document.getElementById('target')!;
+        canv.removeAttribute('data-caman-id');
+        // imgRef.current = canv!;
+        console.log(canv)
+        // const canv = document.createElement('canvas');
+        // const newId = `img${newSrc.slice(1, 3)}`
+        // containerRef.current!.firstChild!.remove();
+        // containerRef.current!.appendChild(canv);
+        setCurrentImage(newSrc);
+        // imgRef.current = document.querySelector('canvas')!
+        // handleButtonClick();
+
+        // camanRef.current!.initCanvas();
+        // camanRef.current!.replaceCanvas(imgRef.current);
+    }
 
     useEffect(() => {
+        // console.log(imgRef.current, imgRef.current!.attributes)
+        // changeImage();
         handleButtonClick();
-    }, [config, handleButtonClick])
+    }, [currentImage, handleButtonClick])
+
+    // useEffect(() => {
+    //     handleButtonClick();
+    // }, [config, handleButtonClick])
 
     return <Row style={{width: '100vw'}} align={"middle"} justify={"center"} gutter={48}>
-        <Col xs={24} sm={12}><Space direction={"vertical"}>
-            <img src={"/01.jpg"}/>
-            <img id={"img1"} data-caman="saturation(-80) brightness(90) vignette('10%')" src={"/01.jpg"}/>
-        </Space></Col>
         <Col xs={24} sm={12}>
-            <ParameterForm userValues={config} setConfig={setConfig}/>
+            <Space direction={"horizontal"}>
+                <img src={currentImage}/>
+                {/*<img ref={imgRef} id={imgId} src={currentImage}/>*/}
+                {/*<div ref={containerRef}>*/}
+                {/*    <canvas id={imgId} />*/}
+                {/*</div>*/}
+                <canvas id={'target'} />
+            </Space>
+        </Col>
+        <Col xs={24} sm={12}>
+            <ParameterForm downloadImgButtonRef={downloadImgButtonRef} userValues={config} setConfig={setConfig}/>
+        </Col>
+        <Col span={24}>
+            {Array.from({length: 25}).map((_, i) => {
+                const src = `/${i < 10 ? '0' + i : i}.jpg`;
+                return <img style={{width: 100, height: 100}} key={src} alt={src} src={src}
+                            onClick={() => changeImage(src)}/>
+            })}
         </Col>
     </Row>;
 }
