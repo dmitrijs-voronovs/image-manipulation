@@ -126,7 +126,7 @@ export function ImageEditor() {
                 {currentImage ? <Space direction={"horizontal"}>
                     <img src={currentImage} width={300}/>
                     <canvas id={'target'}/>
-                </Space> : <Space style={{textAlign: "center"}} align={"center"}>Please upload your images</Space>}
+                </Space> : <Space style={{textAlign: "center"}} align={"center"}>Please select an image</Space>}
             </Col>
             <Col xs={24} sm={12}>
                 <ParameterForm downloadImgButtonRef={downloadImgButtonRef} userValues={config} setConfig={setConfig}/>
