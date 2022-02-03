@@ -25,29 +25,17 @@ import {
   saveConfig,
 } from "../store/config";
 import { CopyOutlined } from "@ant-design/icons";
+import { sanitize } from "./utils/Sanitize";
+import { displayError } from "./utils/displayError";
 
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 18 },
 };
+
 const tailLayout = {
   wrapperCol: { offset: 4, span: 18 },
 };
-
-function errorNotification() {
-  notification.error({ message: "Something went wrong" });
-}
-
-function sanitize(string: string): string {
-  const map = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "/": "&#x2F;",
-  };
-  const reg = /[&<>]/gi;
-  return string.replace(reg, (match) => map[match as keyof typeof map]);
-}
 
 export const ParameterForm: FC<{
   downloadImgButtonRef: RefObject<HTMLAnchorElement>;
@@ -69,7 +57,7 @@ export const ParameterForm: FC<{
       notification.success({ message: "Configuration saved successfully" });
       setConfigs(getAllConfigs());
     } else {
-      errorNotification();
+      displayError();
     }
     setIsModalVisible(false);
   };
@@ -142,7 +130,7 @@ export const ParameterForm: FC<{
                         message: "Configuration was copied to clipboard",
                       });
                     } catch (e) {
-                      errorNotification();
+                      displayError();
                     }
                   }}
                 >
@@ -159,7 +147,7 @@ export const ParameterForm: FC<{
                         if (typeof obj === "object") setConfig(obj);
                       }
                     } catch (e) {
-                      errorNotification();
+                      displayError();
                     }
                   }}
                 >
@@ -171,6 +159,7 @@ export const ParameterForm: FC<{
                 <Button>
                   <a ref={downloadImgButtonRef}>Download</a>
                 </Button>
+                <Button>Download All</Button>
                 <Button
                   onClick={() => {
                     const success = deleteConfigs();
@@ -179,7 +168,7 @@ export const ParameterForm: FC<{
                         message: "Configurations deleted successfully",
                       });
                     } else {
-                      errorNotification();
+                      displayError();
                     }
                   }}
                 >
