@@ -51,8 +51,22 @@ export function ImageEditor() {
 
   return (
     <div style={{ position: "relative" }}>
-      <div style={{ position: "absolute", top: "50%", left: "50%" }}>
-        {isLoading && <LoadingOutlined style={{ fontSize: "50px" }} />}
+      <div
+        style={{
+          position: "fixed",
+          overflow: "auto",
+          display: "flex",
+          width: "100%",
+          height: "100%",
+          alignContent: "center",
+          verticalAlign: "center",
+        }}
+      >
+        {isLoading && (
+          <div>
+            <LoadingOutlined style={{ fontSize: "50px" }} />
+          </div>
+        )}
       </div>
       <Row
         style={{ width: "100vw" }}
