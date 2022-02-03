@@ -16,15 +16,17 @@ export function ImageEditor() {
   const downloadImgButtonRef = useRef<HTMLAnchorElement>(null);
   const camanRef = useRef<CamanInstance>();
 
-  const onFinishRender = useCallback((caman: CamanInstance) => {
-    const downloadButton = downloadImgButtonRef.current;
-    if (downloadButton) {
-      downloadButton.href = caman.toBase64();
-      downloadButton.download = Date.now() + "img.png";
-      console.log(caman.toBase64());
-      setIsLoading(false);
-    }
-  }, []);
+  const onFinishRender = useCallback(
+    (caman: CamanInstance) => {
+      const downloadButton = downloadImgButtonRef.current;
+      if (downloadButton) {
+        downloadButton.href = caman.toBase64();
+        downloadButton.download = `${currentImage}-${Date.now()}.png`;
+        setIsLoading(false);
+      }
+    },
+    [currentImage]
+  );
 
   const handleButtonClick = useCallback(() => {
     if (currentImage && window?.Caman) {

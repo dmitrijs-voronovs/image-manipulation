@@ -27,6 +27,8 @@ import {
 import { CopyOutlined } from "@ant-design/icons";
 import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
+import { editAndDownload } from "./utils/editAndDownload";
+import pLimit from "p-limit";
 
 const layout = {
   labelCol: { span: 4 },
@@ -79,6 +81,16 @@ export const ParameterForm: FC<{
   const onReset = () => {
     form.resetFields();
     setConfig({});
+  };
+
+  const onDownloadAll = async () => {
+    const allImages = ["01.jpg", "02.jpg", "03.jpg", "04.jpg"];
+    const limit = pLimit(5);
+    const promises = allImages.map((img) =>
+      limit(() => editAndDownload(img.slice(0, 2), img, userConfig))
+    );
+    const res = await Promise.all(promises);
+    console.log(res);
   };
 
   return (
@@ -159,7 +171,7 @@ export const ParameterForm: FC<{
                 <Button>
                   <a ref={downloadImgButtonRef}>Download</a>
                 </Button>
-                <Button>Download All</Button>
+                <Button onClick={onDownloadAll}>Download All</Button>
                 <Button
                   onClick={() => {
                     const success = deleteConfigs();
