@@ -1,4 +1,4 @@
-import {FilterArgConfig} from "../pages";
+import {FilterArgConfig} from "../config/filters";
 
 type ModificationFunctions = {
     [Key in keyof FilterArgConfig]: Function
