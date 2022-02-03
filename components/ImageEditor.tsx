@@ -60,7 +60,16 @@ export function ImageEditor() {
         justify={"center"}
         gutter={48}
       >
-        <Col xs={24} sm={12}>
+        <Col
+          xs={24}
+          sm={12}
+          style={{
+            position: "sticky",
+            top: 20,
+            padding: 10,
+            alignSelf: "flex-start",
+          }}
+        >
           {currentImage ? (
             <Space direction={"horizontal"}>
               <img src={currentImage} width={300} />
