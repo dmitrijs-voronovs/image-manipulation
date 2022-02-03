@@ -129,7 +129,7 @@ export function ImageEditor() {
                 </Space> : <Space style={{textAlign: "center"}} align={"center"}>Please select an image</Space>}
             </Col>
             <Col xs={24} sm={12}>
-                <ParameterForm downloadImgButtonRef={downloadImgButtonRef} userValues={config} setConfig={setConfig}/>
+                <ParameterForm downloadImgButtonRef={downloadImgButtonRef} userConfig={config} setConfig={setConfig} />
             </Col>
             <Col span={24} style={{"flexWrap": "wrap"}}>
                 <ImageGallery changeImage={changeImage}/>
