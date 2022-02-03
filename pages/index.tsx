@@ -5,6 +5,7 @@ import {Dispatch, FC, RefObject, SetStateAction, useCallback, useEffect, useRef,
 import Image from 'next/image';
 import debounce from 'lodash.debounce';
 import {CamanInstance} from '../types/Caman';
+import {LoadingOutlined} from "@ant-design/icons";
 
 type FilterArgNumber = {
     min: number, max: number, default?: number
@@ -271,7 +272,9 @@ function PictureTest() {
         handleButtonClick();
     }, [currentImage, handleButtonClick])
 
-    return <Row style={{width: '100vw'}} align={"middle"} justify={"center"} gutter={48}>
+    return <div style={{position: "relative"}}>
+        <div style={{position: "absolute", top:'50%', left: '50%'}} >{isLoading && <LoadingOutlined style={{fontSize: "50px"}} />}</div>
+        <Row style={{width: '100vw'}} align={"middle"} justify={"center"} gutter={48}>
         <Col xs={24} sm={12}>
             {currentImage ? <Space direction={"horizontal"}>
                 <img src={currentImage} width={300}/>
@@ -288,7 +291,7 @@ function PictureTest() {
                             onClick={() => changeImage(src)}/>
             })}
         </Col>
-    </Row>;
+    </Row></div>;
 }
 
 const Home: NextPage = () => {
