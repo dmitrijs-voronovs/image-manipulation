@@ -12,10 +12,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <Space style={{ minHeight: "80vh", padding: 24 }}>
-          <ImageEditor />
-        </Space>
+      <main style={{ minHeight: "80vh", width: "100%", padding: 20 }}>
+        <ImageEditor />
       </main>
 
       <footer style={{ textAlign: "center" }}>Dmitrijs Voronovs</footer>

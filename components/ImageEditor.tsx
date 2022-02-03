@@ -7,14 +7,13 @@ import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
 
+const canvasId = "target";
+
 export function ImageEditor() {
   const [config, setConfig] = useState<Partial<ValueConfig>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentImage, setCurrentImage] = useState<string>("");
-  const imgId = `img${currentImage.slice(1, 3)}`;
-  console.log({ imgId });
   const downloadImgButtonRef = useRef<HTMLAnchorElement>(null);
-  const camanRef = useRef<CamanInstance>();
 
   const onFinishRender = useCallback(
     (caman: CamanInstance) => {
@@ -32,7 +31,7 @@ export function ImageEditor() {
     if (currentImage && window?.Caman) {
       setIsLoading(true);
 
-      camanRef.current = window.Caman(`#target`, currentImage, function () {
+      window.Caman(`#target`, currentImage, function () {
         editImage(this, config);
         this.render(() => onFinishRender(this));
       });
@@ -40,7 +39,7 @@ export function ImageEditor() {
   }, [config, currentImage, onFinishRender]);
 
   function changeImage(newSrc: string) {
-    const canv = document.getElementById("target");
+    const canv = document.getElementById(canvasId);
     canv?.removeAttribute("data-caman-id");
     setCurrentImage(newSrc);
   }
@@ -58,8 +57,8 @@ export function ImageEditor() {
           display: "flex",
           width: "100%",
           height: "100%",
-          alignContent: "center",
-          verticalAlign: "center",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {isLoading && (
@@ -69,7 +68,7 @@ export function ImageEditor() {
         )}
       </div>
       <Row
-        style={{ width: "100vw" }}
+        style={{ width: "100%" }}
         align={"middle"}
         justify={"center"}
         gutter={48}
@@ -85,13 +84,21 @@ export function ImageEditor() {
           }}
         >
           {currentImage ? (
-            <Space direction={"horizontal"}>
+            <Space key={"canvas"} direction={"horizontal"}>
               <img src={currentImage} width={300} />
-              <canvas id={"target"} />
+              <canvas id={canvasId} />
             </Space>
           ) : (
-            <Space style={{ textAlign: "center" }} align={"center"}>
-              Please select an image
+            <Space
+              key={"empty"}
+              direction={"vertical"}
+              style={{ textAlign: "center", top: "40%", fontSize: "1.2rem" }}
+            >
+              <p>
+                Please select an image below or
+                <br />
+                or upload custom images
+              </p>
             </Space>
           )}
         </Col>
