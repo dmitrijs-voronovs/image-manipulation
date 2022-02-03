@@ -24,6 +24,7 @@ import {
   getAllConfigs,
   saveConfig,
 } from "../store/config";
+import { CopyOutlined } from "@ant-design/icons";
 
 const layout = {
   labelCol: { span: 4 },
@@ -35,6 +36,17 @@ const tailLayout = {
 
 function errorNotification() {
   notification.error({ message: "Something went wrong" });
+}
+
+function sanitize(string: string): string {
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "/": "&#x2F;",
+  };
+  const reg = /[&<>]/gi;
+  return string.replace(reg, (match) => map[match as keyof typeof map]);
 }
 
 export const ParameterForm: FC<{
@@ -120,6 +132,39 @@ export const ParameterForm: FC<{
               Configuration actions:{" "}
               <Space>
                 <Button onClick={showModal}>Save</Button>
+                <Button
+                  onClick={async () => {
+                    try {
+                      await window?.navigator.clipboard.writeText(
+                        JSON.stringify(userConfig, null, 2)
+                      );
+                      notification.success({
+                        message: "Configuration was copied to clipboard",
+                      });
+                    } catch (e) {
+                      errorNotification();
+                    }
+                  }}
+                >
+                  Copy <CopyOutlined />
+                </Button>
+                <Button
+                  onClick={async () => {
+                    try {
+                      const resultStr =
+                        await window?.navigator.clipboard.readText();
+                      if (resultStr) {
+                        const sanitizedStr = sanitize(resultStr);
+                        const obj = JSON.parse(sanitizedStr);
+                        if (typeof obj === "object") setConfig(obj);
+                      }
+                    } catch (e) {
+                      errorNotification();
+                    }
+                  }}
+                >
+                  Paste <CopyOutlined />
+                </Button>
                 <Button htmlType="button" onClick={onReset}>
                   Reset
                 </Button>
