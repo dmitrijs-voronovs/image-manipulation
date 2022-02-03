@@ -5,6 +5,7 @@ import {LoadingOutlined} from "@ant-design/icons";
 import {Col, Row, Space} from "antd";
 import {ParameterForm} from "./ParameterForm";
 import {getDefaultFilterValue} from "../config/utils/getDefaultFilterValue";
+import {ImageGallery} from "./ImageGallery";
 
 export function ImageEditor() {
     const [config, setConfig] = useState<Partial<ValueConfig>>({})
@@ -131,11 +132,7 @@ export function ImageEditor() {
                 <ParameterForm downloadImgButtonRef={downloadImgButtonRef} userValues={config} setConfig={setConfig}/>
             </Col>
             <Col span={24} style={{"flexWrap": "wrap"}}>
-                {Array.from({length: 25}).map((_, i) => {
-                    const src = `/${i < 10 ? '0' + i : i}.jpg`;
-                    return <img style={{width: 100, height: 100}} key={src} alt={src} src={src}
-                                onClick={() => changeImage(src)}/>
-                })}
+                <ImageGallery changeImage={changeImage}/>
             </Col>
         </Row></div>;
 }
