@@ -98,7 +98,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
       limit(() => editAndDownload(name, src, userConfig))
     );
     try {
-      const res = await Promise.all(promises);
+      await Promise.all(promises);
       notification.success({ message: "Successfully downloaded all images" });
     } catch (e) {
       displayError();
@@ -137,7 +137,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                       key={name}
                       onClick={() => {
                         form.resetFields();
-                        setConfig(configs[name]);
+                        setConfig(config);
                       }}
                     >
                       {name}
