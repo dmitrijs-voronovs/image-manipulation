@@ -33,7 +33,8 @@ export const editAndDownload = async (
   src: string,
   config: Partial<ValueConfig>
 ) => {
-  const canvasId = "canvas_" + name;
+  const sanitizedName = name.replace(new RegExp(/\W+/g), "");
+  const canvasId = "canvas_" + sanitizedName;
   const el = createCanvas(canvasId);
   console.log(el);
 
@@ -42,9 +43,9 @@ export const editAndDownload = async (
       window.Caman(`#${canvasId}`, src, function () {
         editImage(this, config);
         this.render(() => {
-          downloadImage(`img-${canvasId}`, src, this);
+          downloadImage(sanitizedName, src, this);
           removeElement(canvasId);
-          res(`Image ${name} downloaded`);
+          res(`Image ${sanitizedName} downloaded`);
         });
       });
     } else {

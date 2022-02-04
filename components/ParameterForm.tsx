@@ -29,6 +29,7 @@ import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
 import { editAndDownload } from "./utils/editAndDownload";
 import pLimit from "p-limit";
+import { ImageData } from "./ImageEditor";
 
 const layout = {
   labelCol: { span: 4 },
@@ -39,11 +40,19 @@ const tailLayout = {
   wrapperCol: { offset: 4, span: 18 },
 };
 
-export const ParameterForm: FC<{
+type ParameterFormProps = {
   downloadImgButtonRef: RefObject<HTMLAnchorElement>;
   userConfig: Partial<ValueConfig>;
   setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>>;
-}> = ({ userConfig, setConfig, downloadImgButtonRef }) => {
+  images: ImageData[];
+};
+
+export const ParameterForm: FC<ParameterFormProps> = ({
+  userConfig,
+  setConfig,
+  downloadImgButtonRef,
+  images,
+}) => {
   const [configs, setConfigs] = useState<ConfigStorage>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [configName, setConfigName] = useState<string>("");
@@ -84,13 +93,16 @@ export const ParameterForm: FC<{
   };
 
   const onDownloadAll = async () => {
-    const allImages = ["01.jpg", "02.jpg", "03.jpg", "04.jpg"];
     const limit = pLimit(5);
-    const promises = allImages.map((img) =>
-      limit(() => editAndDownload(img.slice(0, 2), img, userConfig))
+    const promises = images.map(({ name, src }) =>
+      limit(() => editAndDownload(name, src, userConfig))
     );
-    const res = await Promise.all(promises);
-    console.log(res);
+    try {
+      const res = await Promise.all(promises);
+      notification.success({ message: "Successfully downloaded all images" });
+    } catch (e) {
+      displayError();
+    }
   };
 
   return (
@@ -121,7 +133,13 @@ export const ParameterForm: FC<{
                 Apply saved configurations:{" "}
                 <Space>
                   {Object.entries(configs).map(([name, config]) => (
-                    <Button key={name} onClick={() => setConfig(configs[name])}>
+                    <Button
+                      key={name}
+                      onClick={() => {
+                        form.resetFields();
+                        setConfig(configs[name]);
+                      }}
+                    >
                       {name}
                     </Button>
                   ))}

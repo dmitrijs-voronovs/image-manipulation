@@ -2,25 +2,34 @@ import { ValueConfig } from "../config/filters";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CamanInstance } from "../types/Caman";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Col, Row, Space } from "antd";
+import { Button, Col, Row, Space } from "antd";
 import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
 
 const canvasId = "target";
 
+export type ImageData = {
+  src: string;
+  name: string;
+};
+export const defaultImages: ImageData[] = Array.from({ length: 25 }).map(
+  (_, i) => ({ src: `/${i < 10 ? "0" + i : i}.jpg`, name: `original-${i}` })
+);
+
 export function ImageEditor() {
   const [config, setConfig] = useState<Partial<ValueConfig>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [currentImage, setCurrentImage] = useState<string>("");
+  const [images, setImages] = useState<ImageData[]>(defaultImages);
+  const [currentImage, setCurrentImage] = useState<ImageData | null>(null);
   const downloadImgButtonRef = useRef<HTMLAnchorElement>(null);
 
   const onFinishRender = useCallback(
     (caman: CamanInstance) => {
       const downloadButton = downloadImgButtonRef.current;
-      if (downloadButton) {
+      if (downloadButton && currentImage) {
         downloadButton.href = caman.toBase64();
-        downloadButton.download = `${currentImage}-${Date.now()}.png`;
+        downloadButton.download = `${currentImage.name}-${Date.now()}.png`;
         setIsLoading(false);
       }
     },
@@ -31,17 +40,17 @@ export function ImageEditor() {
     if (currentImage && window?.Caman) {
       setIsLoading(true);
 
-      window.Caman(`#target`, currentImage, function () {
+      window.Caman(`#target`, currentImage.src, function () {
         editImage(this, config);
         this.render(() => onFinishRender(this));
       });
     }
   }, [config, currentImage, onFinishRender]);
 
-  function changeImage(newSrc: string) {
+  function changeImage(newImg: ImageData) {
     const canv = document.getElementById(canvasId);
     canv?.removeAttribute("data-caman-id");
-    setCurrentImage(newSrc);
+    setCurrentImage(newImg);
   }
 
   useEffect(() => {
@@ -85,7 +94,7 @@ export function ImageEditor() {
         >
           {currentImage ? (
             <Space key={"canvas"} direction={"horizontal"}>
-              <img src={currentImage} width={300} />
+              <img src={currentImage.src} width={300} />
               <canvas id={canvasId} />
             </Space>
           ) : (
@@ -105,12 +114,17 @@ export function ImageEditor() {
         <Col xs={24} sm={12}>
           <ParameterForm
             downloadImgButtonRef={downloadImgButtonRef}
+            images={images}
             userConfig={config}
             setConfig={setConfig}
           />
         </Col>
         <Col span={24} style={{ flexWrap: "wrap" }}>
-          <ImageGallery changeImage={changeImage} />
+          <ImageGallery
+            images={images}
+            setImages={setImages}
+            changeImage={changeImage}
+          />
         </Col>
       </Row>
     </div>
