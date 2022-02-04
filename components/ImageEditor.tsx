@@ -53,6 +53,7 @@ export function ImageEditor() {
     setCurrentImage(newImg);
   }
 
+  // when image changes, apply effects from config
   useEffect(() => {
     handleButtonClick();
   }, [currentImage, handleButtonClick]);
