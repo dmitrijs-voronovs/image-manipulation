@@ -197,6 +197,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                       notification.success({
                         message: "Configurations deleted successfully",
                       });
+                      setConfigs({});
                     } else {
                       displayError();
                     }
