@@ -6,7 +6,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { filterArgConfig, ValueConfig } from "../config/filters";
 import {
   Button,
   Form,
@@ -29,6 +28,9 @@ import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
 import { downloadImagesInBulks } from "./utils/editAndDownload";
 import { ImageData } from "./ImageEditor";
+import { filterArgConfig } from "../config/filterArgConfig";
+import { ValueConfig } from "../config/valueConfig";
+import { FilterArgPrimitive } from "../config/filters";
 
 const layout = {
   labelCol: { span: 4 },
@@ -102,12 +104,14 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         {Object.entries(filterArgConfig).map(([name, config]) => {
           if (Array.isArray(config)) {
             //
-          } else if (config === "object") {
+            console.log("arr", config);
+          } else if (!("default" in config)) {
+            console.log("obj", config);
           } else
             return (
               <DynamicField
                 name={name}
-                config={config}
+                config={config as FilterArgPrimitive}
                 value={userConfig[name]}
               />
             );

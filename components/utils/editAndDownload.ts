@@ -1,10 +1,10 @@
-import { ValueConfig } from "../../config/filters";
 import { editImage } from "./editImage";
 import { CamanInstance } from "../../types/Caman";
 import { ImageData } from "../ImageEditor";
 import pLimit from "p-limit";
 import { notification } from "antd";
 import { displayError } from "./displayError";
+import { ValueConfig } from "../../config/valueConfig";
 
 export const downloadImagesInBulks = async (
   images: ImageData[],

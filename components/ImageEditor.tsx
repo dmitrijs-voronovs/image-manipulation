@@ -1,11 +1,11 @@
-import { ValueConfig } from "../config/filters";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CamanInstance } from "../types/Caman";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Space } from "antd";
+import { Col, Row, Space } from "antd";
 import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
+import { ValueConfig } from "../config/valueConfig";
 
 const canvasId = "target";
 
@@ -18,8 +18,17 @@ export const defaultImages: ImageData[] = Array.from({ length: 25 }).map(
   (_, i) => ({ src: `/${i < 10 ? "0" + i : i}.jpg`, name: `original-${i}` })
 );
 
+// is complex ? array and array[1] also array
+
 export function ImageEditor() {
-  const [config, setConfig] = useState<Partial<ValueConfig>>({});
+  const [config, setConfig] = useState<Partial<ValueConfig>>({
+    // colorize: ["124", 41],
+    // channels: {
+    //   red: 1,
+    //   blue: 2,
+    //   green: 4,
+    // },
+  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [images, setImages] = useState<ImageData[]>(defaultImages);
   const [currentImage, setCurrentImage] = useState<ImageData | null>(null);
@@ -96,7 +105,8 @@ export function ImageEditor() {
         >
           {currentImage ? (
             <Space key={"canvas"} direction={"horizontal"}>
-              <img src={currentImage.src} width={300} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={currentImage.src} width={300} alt={currentImage.name} />
               <canvas id={canvasId} />
             </Space>
           ) : (

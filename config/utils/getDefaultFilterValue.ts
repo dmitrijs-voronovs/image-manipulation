@@ -1,10 +1,29 @@
-import {filterArgConfig} from "../filters";
+import { filterArgConfig } from "../filterArgConfig";
+import { BaseFilterArgs, FilterArgPrimitive, WithSwitch } from "../filters";
+import { isValWithSwitch } from "../../components/utils/isValWithSwitch";
 
-export function getDefaultFilterValue(filter1: string) {
-    const filter = filterArgConfig[filter1];
-    if (Array.isArray(filter)) {
-        return filter.map(val => val.default);
+export function getDefaultFilterValue(filterName: string) {
+  const filter = filterArgConfig[filterName];
+  if (Array.isArray(filter)) {
+    if (isValWithSwitch(filter)) {
+      const argWithSwitch = (filter as WithSwitch<BaseFilterArgs>)[1][0];
+      return Array.isArray(argWithSwitch)
+        ? argWithSwitch.map((v) => v.default)
+        : argWithSwitch.default;
     }
 
-    return filter.default;
+    return (filter as FilterArgPrimitive[]).map((v) => v.default);
+  }
+
+  if (!("default" in filter)) {
+    return Object.entries(filter).reduce<Record<string, FilterArgPrimitive>>(
+      (defaults, [key, val]) => {
+        defaults[key] = val.default;
+        return defaults;
+      },
+      {}
+    );
+  }
+
+  return (filter as FilterArgPrimitive).default;
 }
