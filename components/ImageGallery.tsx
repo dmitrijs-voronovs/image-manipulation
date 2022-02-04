@@ -1,8 +1,7 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useRef } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { Button, Space } from "antd";
 import { defaultImages, ImageData } from "./ImageEditor";
-import { getFileData } from "./utils/getFileData";
-import { displayError } from "./utils/displayError";
+import { FileUploadButton } from "./FileUploadButton";
 
 type ImageGalleryProps = {
   changeImage(img: ImageData): void;
@@ -15,25 +14,6 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
   images,
   setImages,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    e.persist();
-    const files = e.target!.files;
-    if (!files?.length) return;
-
-    const promises = [];
-    for (let i = 0; i < files.length; i++) {
-      promises.push(getFileData(files[i]));
-    }
-
-    try {
-      const results = await Promise.all(promises);
-      setImages(results as ImageData[]);
-    } catch (e) {
-      displayError();
-    }
-  };
-
   return (
     <Space direction={"vertical"}>
       <Space wrap>
@@ -54,21 +34,7 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
         })}
       </Space>
       <Space>
-        <Button
-          onClick={() => {
-            fileInputRef.current!.click();
-          }}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            id={"upload-file"}
-            onChange={(e) => handleFileUpload(e)}
-            multiple
-            hidden
-          />
-          + Upload
-        </Button>
+        <FileUploadButton onFileLoaded={(files) => setImages(files)} />
         <Button onClick={() => setImages(defaultImages)}>
           Reset to default images
         </Button>
