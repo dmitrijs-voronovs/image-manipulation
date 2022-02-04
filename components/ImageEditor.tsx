@@ -18,17 +18,8 @@ export const defaultImages: ImageData[] = Array.from({ length: 25 }).map(
   (_, i) => ({ src: `/${i < 10 ? "0" + i : i}.jpg`, name: `original-${i}` })
 );
 
-// is complex ? array and array[1] also array
-
 export function ImageEditor() {
-  const [config, setConfig] = useState<Partial<ValueConfig>>({
-    // colorize: ["124", 41],
-    // channels: {
-    //   red: 1,
-    //   blue: 2,
-    //   green: 4,
-    // },
-  });
+  const [config, setConfig] = useState<Partial<ValueConfig>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [images, setImages] = useState<ImageData[]>(defaultImages);
   const [currentImage, setCurrentImage] = useState<ImageData | null>(null);
