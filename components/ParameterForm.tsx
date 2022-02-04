@@ -27,8 +27,7 @@ import {
 import { CopyOutlined } from "@ant-design/icons";
 import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
-import { editAndDownload } from "./utils/editAndDownload";
-import pLimit from "p-limit";
+import { downloadImagesInBulks } from "./utils/editAndDownload";
 import { ImageData } from "./ImageEditor";
 
 const layout = {
@@ -92,19 +91,6 @@ export const ParameterForm: FC<ParameterFormProps> = ({
     setConfig({});
   };
 
-  const onDownloadAll = async () => {
-    const limit = pLimit(5);
-    const promises = images.map(({ name, src }) =>
-      limit(() => editAndDownload(name, src, userConfig))
-    );
-    try {
-      await Promise.all(promises);
-      notification.success({ message: "Successfully downloaded all images" });
-    } catch (e) {
-      displayError();
-    }
-  };
-
   return (
     <>
       <Form
@@ -130,8 +116,8 @@ export const ParameterForm: FC<ParameterFormProps> = ({
           <Space direction={"vertical"}>
             {Object.keys(configs).length ? (
               <Space>
-                Apply saved configurations:{" "}
-                <Space>
+                Apply saved configurations:
+                <Space wrap>
                   {Object.entries(configs).map(([name, config]) => (
                     <Button
                       key={name}
@@ -148,7 +134,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
             ) : null}
             <Space>
               Configuration actions:{" "}
-              <Space>
+              <Space wrap>
                 <Button onClick={showModal}>Save</Button>
                 <Button
                   onClick={async () => {
@@ -189,7 +175,11 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                 <Button>
                   <a ref={downloadImgButtonRef}>Download</a>
                 </Button>
-                <Button onClick={onDownloadAll}>Download All</Button>
+                <Button
+                  onClick={() => downloadImagesInBulks(images, userConfig)}
+                >
+                  Download All
+                </Button>
                 <Button
                   onClick={() => {
                     const success = deleteConfigs();

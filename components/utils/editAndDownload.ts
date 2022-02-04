@@ -1,6 +1,52 @@
 import { ValueConfig } from "../../config/filters";
 import { editImage } from "./editImage";
 import { CamanInstance } from "../../types/Caman";
+import { ImageData } from "../ImageEditor";
+import pLimit from "p-limit";
+import { notification } from "antd";
+import { displayError } from "./displayError";
+
+export const downloadImagesInBulks = async (
+  images: ImageData[],
+  config: Partial<ValueConfig>
+) => {
+  const limit = pLimit(5);
+  const promises = images.map(({ name, src }) =>
+    limit(() => editAndDownload(name, src, config))
+  );
+  try {
+    await Promise.all(promises);
+    notification.success({ message: "Successfully downloaded all images" });
+  } catch (e) {
+    displayError();
+  }
+};
+
+const editAndDownload = async (
+  name: string,
+  src: string,
+  config: Partial<ValueConfig>
+) => {
+  const sanitizedName = name.replace(new RegExp(/\W+/g), "");
+  const canvasId = "canvas_" + sanitizedName;
+  const el = createCanvas(canvasId);
+  console.log(el);
+
+  return new Promise((res, rej) => {
+    if (window.Caman) {
+      window.Caman(`#${canvasId}`, src, function () {
+        editImage(this, config);
+        this.render(() => {
+          downloadImage(sanitizedName, src, this);
+          removeElement(canvasId);
+          res(`Image ${sanitizedName} downloaded`);
+        });
+      });
+    } else {
+      rej(`Failed for img ${src}`);
+    }
+  });
+};
 
 function moveElementOutOfScreen(element: HTMLElement) {
   element.style.position = "absolute";
@@ -27,29 +73,3 @@ function downloadImage(name: string, src: string, caman: CamanInstance) {
   a.click();
   a.remove();
 }
-
-export const editAndDownload = async (
-  name: string,
-  src: string,
-  config: Partial<ValueConfig>
-) => {
-  const sanitizedName = name.replace(new RegExp(/\W+/g), "");
-  const canvasId = "canvas_" + sanitizedName;
-  const el = createCanvas(canvasId);
-  console.log(el);
-
-  return new Promise((res, rej) => {
-    if (window.Caman) {
-      window.Caman(`#${canvasId}`, src, function () {
-        editImage(this, config);
-        this.render(() => {
-          downloadImage(sanitizedName, src, this);
-          removeElement(canvasId);
-          res(`Image ${sanitizedName} downloaded`);
-        });
-      });
-    } else {
-      rej(`Failed for img ${src}`);
-    }
-  });
-};
