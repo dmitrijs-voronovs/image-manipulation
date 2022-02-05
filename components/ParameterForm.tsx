@@ -28,9 +28,8 @@ import { downloadImagesInBulks } from "./utils/editAndDownload";
 import { ImageData } from "./ImageEditor";
 import { ValueConfig } from "../config/valueConfig";
 import { FormFields } from "./FormFields";
-import { isValWithSwitch } from "./utils/isValWithSwitch";
-import { getDefaultFilterValue } from "../config/utils/getDefaultFilterValue";
-import { debounce, cloneDeep, merge } from "lodash";
+import { debounce } from "lodash";
+import { convertFormValuesToConfig } from "./utils/valueConverter";
 
 export const formLayout = {
   labelCol: { span: 4 },
@@ -105,67 +104,9 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   };
 
   const onChange = (val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
-    // const fieldName = Object.keys(val)[0];
-    // const field = val[fieldName];
-    // const defaultValue = getDefaultFilterValue(fieldName);
-    // console.log({ val, all, defaultValue });
     console.log({ val, all });
-    // if (Array.isArray(defaultValue)) {
-    //   // if (isValWithSwitch(field)) {
-    //   //
-    //   // }
-    //   if (!Array.isArray(all[fieldName])) {
-    //     all[fieldName] = defaultValue;
-    //   }
-    //   Object.entries(field).forEach(([k, v]) => {
-    //     all[fieldName][k] = v;
-    //   });
-    // } else if (typeof defaultValue === "object") {
-    //   console.log(fieldName);
-    //   all[fieldName] = field;
-    // }
 
-    function convertArrWithSwitch(val: any, def: any): any[] {
-      const valCopy = cloneDeep(val);
-      const res = cloneDeep(def);
-      // switch value
-      res[0] = valCopy[0];
-      delete valCopy[0];
-      if (Object.keys(valCopy).length === 1) {
-        res[1][0] = Object.values(valCopy)[0];
-      } else {
-        Object.entries(valCopy).forEach(([k, v]) => {
-          if (v) res[1][0][Number(k) - 1] = v;
-        });
-      }
-      console.log("arr+Sw", val, def, res);
-      return res;
-    }
-
-    function convertArr(value: Object, def: any): any[] {
-      const res = cloneDeep(def);
-      Object.entries(value).forEach(([k, v]) => {
-        if (v) res[k] = v;
-      });
-      console.log("arr", value, def, res);
-      return res;
-    }
-
-    Object.entries(all)
-      .filter(([_, v]) => typeof v === "object")
-      .forEach(([field, value]) => {
-        const def = getDefaultFilterValue(field);
-        console.log(def);
-        if (Array.isArray(def)) {
-          if (isValWithSwitch(value)) {
-            all[field] = convertArrWithSwitch(value, def);
-          } else {
-            all[field] = convertArr(value, def);
-          }
-        } else {
-          all[field] = merge(def, value);
-        }
-      });
+    convertFormValuesToConfig(all);
     onFinish(all);
   };
 
