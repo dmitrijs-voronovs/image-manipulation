@@ -9,19 +9,20 @@ import { Form, Input, Slider, Switch } from "antd";
 import { filterArgConfig } from "../config/filterArgConfig";
 
 export const DynamicField: FC<{
-  name: string;
+  name: string | string[];
+  label: string;
   config: FilterArgPrimitive;
   value: unknown;
-}> = ({ name, config, value }) => {
-  const argConfig = filterArgConfig[name];
+}> = ({ name, config, value, label }) => {
+  // const config = filterArgConfig[label];
   if (typeof config.default === "boolean") {
     return (
-      <Form.Item name={name} label={name} required={true}>
+      <Form.Item name={name} label={label} required={true}>
         <Switch
           defaultChecked={
             typeof value !== "undefined"
               ? Boolean(value)
-              : (argConfig as FilterArgBool).default
+              : (config as FilterArgBool).default
           }
         />
       </Form.Item>
@@ -30,18 +31,18 @@ export const DynamicField: FC<{
 
   if (typeof config.default === "string") {
     return (
-      <Form.Item name={name} label={name} required={true}>
+      <Form.Item name={name} label={label} required={true}>
         <Input
           type={"color"}
-          defaultValue={String(value) || (argConfig as FilterArgString).default}
+          defaultValue={String(value) || (config as FilterArgString).default}
         />
       </Form.Item>
     );
   }
 
   if (typeof config.default === "number") {
-    const max = (argConfig as FilterArgNumber).max;
-    const min = (argConfig as FilterArgNumber).min;
+    const max = (config as FilterArgNumber).max;
+    const min = (config as FilterArgNumber).min;
     const step = max / 100;
     // const marks = Array.from({length: max / 10}).map((a,i) => {
     //
@@ -58,11 +59,11 @@ export const DynamicField: FC<{
       return acc;
     }, {});
     return (
-      <Form.Item name={name} label={name}>
+      <Form.Item name={name} label={label}>
         <Slider
           min={min}
           max={max}
-          defaultValue={Number(value) || (argConfig as FilterArgNumber).default}
+          defaultValue={Number(value) || (config as FilterArgNumber).default}
           step={step}
           marks={marks}
         />

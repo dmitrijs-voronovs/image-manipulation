@@ -30,12 +30,12 @@ import { ImageData } from "./ImageEditor";
 import { ValueConfig } from "../config/valueConfig";
 import { FormFields } from "./FormFields";
 
-const layout = {
+export const formLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 18 },
 };
 
-const tailLayout = {
+export const tailLayout = {
   wrapperCol: { offset: 4, span: 18 },
 };
 
@@ -46,13 +46,21 @@ type ParameterFormProps = {
   images: ImageData[];
 };
 
+const defaultConfig: Partial<ValueConfig> = {
+  channels: {
+    red: 0,
+    green: 0,
+    blue: 0,
+  },
+};
+
 export const ParameterForm: FC<ParameterFormProps> = ({
   userConfig,
   setConfig,
   downloadImgButtonRef,
   images,
 }) => {
-  const [configs, setConfigs] = useState<ConfigStorage>({});
+  const [configs, setConfigs] = useState<ConfigStorage>(defaultConfig);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [configName, setConfigName] = useState<string>("");
 
@@ -88,16 +96,24 @@ export const ParameterForm: FC<ParameterFormProps> = ({
 
   const onReset = () => {
     form.resetFields();
-    setConfig({});
+    setConfig(defaultConfig);
+  };
+
+  const onChange = (field: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
+    const fieldName = Object.keys(field)[0];
+    if (typeof field[fieldName] === "object") {
+      all[fieldName] = field[fieldName];
+    }
+    onFinish(all);
   };
 
   return (
     <>
       <Form
-        {...layout}
+        {...formLayout}
         form={form}
         name="control-hooks"
-        onValuesChange={debounce((field, all) => onFinish(all), 200)}
+        onValuesChange={debounce(onChange, 200)}
       >
         <FormFields config={userConfig} />
         <Form.Item {...tailLayout}>
