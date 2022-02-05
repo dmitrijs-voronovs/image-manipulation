@@ -41,6 +41,23 @@ export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
               <pre>
                 {name}:{JSON.stringify(fieldConfig, null, 2)}
               </pre>
+              <Form.Item
+                style={{ border: "1px solid red" }}
+                label={name}
+                wrapperCol={{ offset: 2, span: 16 }}
+              >
+                {(fieldConfig as FilterArgPrimitive[]).map((v, i) => {
+                  return (
+                    <DynamicField
+                      label={v.label!}
+                      name={[name, String(i)]}
+                      key={v.label || i}
+                      config={v}
+                      value={val?.[i] || v.default}
+                    />
+                  );
+                })}
+              </Form.Item>
             </>
           );
           console.log("arr", fieldConfig);

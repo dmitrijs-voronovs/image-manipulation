@@ -115,7 +115,10 @@ export const filterArgConfig: FilterArgConfig = {
   gaussianBlur: { default: false },
   motionBlur: [falseSwitch, [degrees]],
   sharpen: delta100(),
-  vignette: [delta100("size"), delta100("strength")],
+  vignette: [
+    { min: 0, max: 1000, default: 0, label: "size" },
+    { min: 0, max: 1000, default: 0, label: "strength" },
+  ],
   edgeEnhance: { default: false },
   edgeDetect: { default: false },
   emboss: { default: false },
