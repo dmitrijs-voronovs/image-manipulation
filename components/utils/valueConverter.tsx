@@ -7,13 +7,14 @@ function convertArrWithSwitch(val: any, def: any): any[] {
   const valCopy = cloneDeep(val);
   const res = cloneDeep(def);
   // switch value
-  res[0] = valCopy[0];
+  if (valCopy[0] !== undefined) res[0] = valCopy[0];
   delete valCopy[0];
   if (Object.keys(valCopy).length === 1) {
-    res[1][0] = Object.values(valCopy)[0];
+    const v = Object.values(valCopy)[0];
+    if (v) res[1][0] = v;
   } else {
     Object.entries(valCopy).forEach(([k, v]) => {
-      if (v) res[1][0][Number(k) - 1] = v;
+      if (v !== undefined) res[1][0][Number(k) - 1] = v;
     });
   }
   console.log("arr+Sw", val, def, res);
@@ -34,9 +35,10 @@ export function convertFormValuesToConfig(all: Partial<ValueConfig>) {
     .filter(([_, v]) => typeof v === "object")
     .forEach(([field, value]) => {
       const def = getDefaultFilterValue(field);
-      console.log(def);
+      console.log(field, def);
       if (Array.isArray(def)) {
-        if (isValWithSwitch(value)) {
+        console.log(field, { def, f: isValWithSwitch(def) });
+        if (isValWithSwitch(def)) {
           all[field] = convertArrWithSwitch(value, def);
         } else {
           all[field] = convertArr(value, def);

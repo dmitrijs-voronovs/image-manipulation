@@ -7,9 +7,10 @@ export function getDefaultFilterValue(filterName: string) {
   if (Array.isArray(filter)) {
     if (isValWithSwitch(filter)) {
       const argWithSwitch = (filter as WithSwitch<BaseFilterArgs>)[1][0];
-      return Array.isArray(argWithSwitch)
+      const args = Array.isArray(argWithSwitch)
         ? argWithSwitch.map((v) => v.default)
         : argWithSwitch.default;
+      return [filter[0].default, [args]];
     }
     console.log("converting", filterName, filter);
     return (filter as FilterArgPrimitive[]).map((v) => v.default);
