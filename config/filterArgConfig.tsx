@@ -29,32 +29,33 @@ const degrees = {
 };
 export const filterArgConfig: FilterArgConfig = {
   brightness: delta200(),
-  channels: {
-    red: delta200(),
-    green: delta200(),
-    blue: delta200(),
-  },
   clip: delta100(),
-  colorize: [{ default: "#ffffff", label: "color" }, delta100("value")],
   contrast: delta200(),
-  exposure: delta200(), // TODO: add filter arg
-  fillColor: [falseSwitch, [{ default: "#ffffff" }]],
+  exposure: delta200(),
   gamma: {
     min: 0,
     max: 5,
     default: 1,
   },
-  greyscale: { default: false },
-  hue: delta100(),
-  invert: { default: false },
   noise: {
     min: 0,
     max: 100,
     default: 0,
-  },
+  }, // TODO: add filter arg
   saturation: delta200(),
   sepia: delta100(),
   vibrance: delta200(),
+  sharpen: delta100(),
+  hue: delta100(),
+  fillColor: [falseSwitch, [{ default: "#ffffff" }]],
+  colorize: [{ default: "#ffffff", label: "color" }, delta100("value")],
+  channels: {
+    red: delta200(),
+    green: delta200(),
+    blue: delta200(),
+  },
+  greyscale: { default: false },
+  invert: { default: false },
   stackBlur: {
     min: 0,
     max: 50,
@@ -64,14 +65,10 @@ export const filterArgConfig: FilterArgConfig = {
   heavyRadialBlur: { default: false },
   gaussianBlur: { default: false },
   motionBlur: [falseSwitch, [degrees]],
-  sharpen: delta100(),
   vignette: [
     { min: 0, max: 1000, default: 0, label: "size" },
     { min: 0, max: 1000, default: 0, label: "strength" },
   ],
-  edgeEnhance: { default: false },
-  edgeDetect: { default: false },
-  emboss: { default: false },
   posterize: [
     falseSwitch,
     [
@@ -83,7 +80,10 @@ export const filterArgConfig: FilterArgConfig = {
       },
     ],
   ],
-  threshold: [falseSwitch, [delta200("value")]],
+  threshold: [falseSwitch, [delta100("value")]],
+  edgeEnhance: { default: false },
+  edgeDetect: { default: false },
+  emboss: { default: false },
   // resize: [
   //   falseSwitch,
   //   [
@@ -103,38 +103,38 @@ export const filterArgConfig: FilterArgConfig = {
   //     ],
   //   ],
   // ],
-  rotate: [falseSwitch, [degrees]],
-  crop: [
-    falseSwitch,
-    [
-      [
-        {
-          min: 0,
-          max: 2000,
-          label: "width",
-          default: 0,
-        },
-        {
-          min: 0,
-          max: 2000,
-          label: "height",
-          default: 0,
-        },
-        {
-          min: 0,
-          max: 2000,
-          label: "x",
-          default: 0,
-        },
-        {
-          min: 0,
-          max: 2000,
-          label: "y",
-          default: 0,
-        },
-      ],
-    ],
-  ],
+  // rotate: [falseSwitch, [degrees]],
+  // crop: [
+  //   falseSwitch,
+  //   [
+  //     [
+  //       {
+  //         min: 0,
+  //         max: 2000,
+  //         label: "width",
+  //         default: 0,
+  //       },
+  //       {
+  //         min: 0,
+  //         max: 2000,
+  //         label: "height",
+  //         default: 0,
+  //       },
+  //       {
+  //         min: 0,
+  //         max: 2000,
+  //         label: "x",
+  //         default: 0,
+  //       },
+  //       {
+  //         min: 0,
+  //         max: 2000,
+  //         label: "y",
+  //         default: 0,
+  //       },
+  //     ],
+  //   ],
+  // ],
 };
 
 export const filtersRequireReloading = ["rotate", "resize", "crop"];

@@ -18,6 +18,7 @@ export const editImage = (
   });
 
   // caman.crop(300, 300, 200, 200);
+  // caman.brightness(50);
   // caman.rotate(15);
   //
   // caman.render(function () {

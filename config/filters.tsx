@@ -73,11 +73,11 @@ export interface MainFilters extends Record<string, FilterArgs> {
 }
 
 export interface AdditionalFilters extends Record<string, FilterArgs> {
-  crop: WithSwitch<
-    [FilterArgNumber, FilterArgNumber, FilterArgNumber, FilterArgNumber]
-  >;
+  // crop: WithSwitch<
+  //   [FilterArgNumber, FilterArgNumber, FilterArgNumber, FilterArgNumber]
+  // >;
   // resize: WithSwitch<[FilterArgNumber, FilterArgNumber]>;
-  rotate: WithSwitch<FilterArgNumber>;
+  // rotate: WithSwitch<FilterArgNumber>;
 }
 
 export interface FilterArgConfig extends MainFilters, AdditionalFilters {}
