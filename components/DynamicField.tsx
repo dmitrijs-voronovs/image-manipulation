@@ -47,7 +47,7 @@ export const DynamicField: FC<{
     //
     // })
     const total = min > max ? min - max : max - min;
-    const markCount = 5;
+    const markCount = 10;
     const markStep = total / markCount;
     const marks = Array.from({ length: markCount - 1 }).reduce<
       Record<string, string>

@@ -16,7 +16,6 @@ import {
   Typography,
 } from "antd";
 import debounce from "lodash.debounce";
-import { DynamicField } from "./DynamicField";
 import {
   ConfigStorage,
   deleteConfigs,
@@ -28,9 +27,8 @@ import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
 import { downloadImagesInBulks } from "./utils/editAndDownload";
 import { ImageData } from "./ImageEditor";
-import { filterArgConfig } from "../config/filterArgConfig";
 import { ValueConfig } from "../config/valueConfig";
-import { FilterArgPrimitive } from "../config/filters";
+import { FormFields } from "./FormFields";
 
 const layout = {
   labelCol: { span: 4 },
@@ -101,21 +99,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         name="control-hooks"
         onValuesChange={debounce((field, all) => onFinish(all), 200)}
       >
-        {Object.entries(filterArgConfig).map(([name, config]) => {
-          if (Array.isArray(config)) {
-            //
-            console.log("arr", config);
-          } else if (!("default" in config)) {
-            console.log("obj", config);
-          } else
-            return (
-              <DynamicField
-                name={name}
-                config={config as FilterArgPrimitive}
-                value={userConfig[name]}
-              />
-            );
-        })}
+        <FormFields config={userConfig} />
         <Form.Item {...tailLayout}>
           <Space direction={"vertical"}>
             {Object.keys(configs).length ? (
