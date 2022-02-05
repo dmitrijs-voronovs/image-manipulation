@@ -70,14 +70,14 @@ export interface MainFilters extends Record<string, FilterArgs> {
   emboss: FilterArgBool;
   posterize: WithSwitch<FilterArgNumber>;
   threshold: WithSwitch<FilterArgNumber>;
-  rotate: WithSwitch<FilterArgNumber>;
 }
 
 export interface AdditionalFilters extends Record<string, FilterArgs> {
   crop: WithSwitch<
     [FilterArgNumber, FilterArgNumber, FilterArgNumber, FilterArgNumber]
   >;
-  resize: WithSwitch<[FilterArgNumber, FilterArgNumber]>;
+  // resize: WithSwitch<[FilterArgNumber, FilterArgNumber]>;
+  rotate: WithSwitch<FilterArgNumber>;
 }
 
 export interface FilterArgConfig extends MainFilters, AdditionalFilters {}

@@ -47,13 +47,7 @@ type ParameterFormProps = {
   images: ImageData[];
 };
 
-const defaultConfig: Partial<ValueConfig> = {
-  // channels: {
-  //   red: 0,
-  //   green: 0,
-  //   blue: 0,
-  // },
-};
+const defaultConfig: Partial<ValueConfig> = {};
 
 export const ParameterForm: FC<ParameterFormProps> = ({
   userConfig,

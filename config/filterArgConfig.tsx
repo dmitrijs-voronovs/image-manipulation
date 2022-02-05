@@ -60,6 +60,50 @@ export const filterArgConfig: FilterArgConfig = {
     max: 50,
     default: 0,
   },
+  boxBlur: { default: false },
+  heavyRadialBlur: { default: false },
+  gaussianBlur: { default: false },
+  motionBlur: [falseSwitch, [degrees]],
+  sharpen: delta100(),
+  vignette: [
+    { min: 0, max: 1000, default: 0, label: "size" },
+    { min: 0, max: 1000, default: 0, label: "strength" },
+  ],
+  edgeEnhance: { default: false },
+  edgeDetect: { default: false },
+  emboss: { default: false },
+  posterize: [
+    falseSwitch,
+    [
+      {
+        min: 0,
+        max: 255,
+        default: 0,
+        step: 1,
+      },
+    ],
+  ],
+  threshold: [falseSwitch, [delta200("value")]],
+  // resize: [
+  //   falseSwitch,
+  //   [
+  //     [
+  //       {
+  //         min: 0,
+  //         max: 2000,
+  //         label: "width",
+  //         default: 0,
+  //       },
+  //       {
+  //         min: 0,
+  //         max: 2000,
+  //         label: "height",
+  //         default: 0,
+  //       },
+  //     ],
+  //   ],
+  // ],
+  rotate: [falseSwitch, [degrees]],
   crop: [
     falseSwitch,
     [
@@ -91,48 +135,6 @@ export const filterArgConfig: FilterArgConfig = {
       ],
     ],
   ],
-  resize: [
-    falseSwitch,
-    [
-      [
-        {
-          min: 0,
-          max: 2000,
-          label: "width",
-          default: 0,
-        },
-        {
-          min: 0,
-          max: 2000,
-          label: "height",
-          default: 0,
-        },
-      ],
-    ],
-  ],
-  boxBlur: { default: false },
-  heavyRadialBlur: { default: false },
-  gaussianBlur: { default: false },
-  motionBlur: [falseSwitch, [degrees]],
-  sharpen: delta100(),
-  vignette: [
-    { min: 0, max: 1000, default: 0, label: "size" },
-    { min: 0, max: 1000, default: 0, label: "strength" },
-  ],
-  edgeEnhance: { default: false },
-  edgeDetect: { default: false },
-  emboss: { default: false },
-  posterize: [
-    falseSwitch,
-    [
-      {
-        min: 0,
-        max: 255,
-        default: 0,
-        step: 1,
-      },
-    ],
-  ],
-  threshold: [falseSwitch, [delta200("value")]],
-  rotate: [falseSwitch, [degrees]],
 };
+
+export const filtersRequireReloading = ["rotate", "resize", "crop"];

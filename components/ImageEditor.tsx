@@ -42,8 +42,7 @@ export function ImageEditor() {
       setIsLoading(true);
 
       window.Caman(`#target`, currentImage.src, function () {
-        editImage(this, config);
-        this.render(() => onFinishRender(this));
+        editImage(this, config, () => onFinishRender(this));
       });
     }
   }, [config, currentImage, onFinishRender]);
