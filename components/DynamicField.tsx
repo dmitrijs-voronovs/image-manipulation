@@ -5,8 +5,9 @@ import {
   FilterArgNumber,
   FilterArgString,
 } from "../config/filters";
-import { Form, Input, Slider, Switch } from "antd";
+import { Form, Input, Select, Slider, Switch } from "antd";
 import { filterArgConfig } from "../config/filterArgConfig";
+import { Option } from "rc-select";
 
 export const DynamicField: FC<{
   name: string | string[];
@@ -30,6 +31,24 @@ export const DynamicField: FC<{
   }
 
   if (typeof config.default === "string") {
+    if ((config as FilterArgString).options) {
+      return (
+        <Form.Item name={name} label={label} required={true}>
+          <Select
+            defaultValue={
+              value ? String(value) : (config as FilterArgString).default
+            }
+          >
+            {((config as FilterArgString).options || []).map((opt) => (
+              <Option key={opt} value={opt}>
+                {opt}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+      );
+    }
+
     return (
       <Form.Item name={name} label={label} required={true}>
         <Input

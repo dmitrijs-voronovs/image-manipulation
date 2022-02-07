@@ -13,7 +13,10 @@ export type FilterArgNumber = FilterArgBase &
     max: number;
     default: number;
   };
-export type FilterArgString = FilterArgBase & { default: string };
+export type FilterArgString = FilterArgBase & {
+  default: string;
+  options?: string[];
+};
 export type FilterArgBool = FilterArgBase & { default: boolean };
 
 export const SWITCH_ARG_LABEL = "applied";
@@ -41,7 +44,6 @@ export interface MainFilters extends Record<string, FilterArgs> {
   colorize: [FilterArgString, FilterArgNumber];
   contrast: FilterArgNumber;
   exposure: FilterArgNumber;
-  fillColor: WithSwitch<FilterArgString>;
   gamma: FilterArgNumber;
   greyscale: FilterArgBool;
   hue: FilterArgNumber;
@@ -72,12 +74,19 @@ export interface MainFilters extends Record<string, FilterArgs> {
   threshold: WithSwitch<FilterArgNumber>;
 }
 
-export interface AdditionalFilters extends Record<string, FilterArgs> {
-  // crop: WithSwitch<
-  //   [FilterArgNumber, FilterArgNumber, FilterArgNumber, FilterArgNumber]
-  // >;
-  // resize: WithSwitch<[FilterArgNumber, FilterArgNumber]>;
-  // rotate: WithSwitch<FilterArgNumber>;
+export interface TransformationFilters extends Record<string, FilterArgs> {
+  crop: WithSwitch<
+    [FilterArgNumber, FilterArgNumber, FilterArgNumber, FilterArgNumber]
+  >;
+  resize: WithSwitch<[FilterArgNumber, FilterArgNumber]>;
+  rotate: WithSwitch<FilterArgNumber>;
 }
 
-export interface FilterArgConfig extends MainFilters, AdditionalFilters {}
+export interface LayerFilters extends Record<string, FilterArgs> {
+  setBlendingMode: FilterArgString;
+  opacity: FilterArgNumber;
+  fillColor: WithSwitch<FilterArgString>;
+}
+
+// export interface FilterArgConfig extends MainFilters, TransformationFilters {}
+export interface FilterArgConfig extends MainFilters, LayerFilters {}

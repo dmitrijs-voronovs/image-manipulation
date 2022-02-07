@@ -18,8 +18,11 @@ export const defaultImages: ImageData[] = Array.from({ length: 25 }).map(
   (_, i) => ({ src: `/${i < 10 ? "0" + i : i}.jpg`, name: `original-${i}` })
 );
 
+export const BASE_LAYER_IDX = 0;
+
 export function ImageEditor() {
   const [config, setConfig] = useState<Partial<ValueConfig>>({});
+  const [layerIdx, setLayerIdx] = useState<number>(BASE_LAYER_IDX);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [images, setImages] = useState<ImageData[]>(defaultImages);
   const [currentImage, setCurrentImage] = useState<ImageData | null>(null);

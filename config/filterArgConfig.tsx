@@ -2,7 +2,10 @@ import {
   FilterArgConfig,
   FilterArgNumber,
   FilterArgSwitch,
+  LayerFilters,
+  MainFilters,
   SWITCH_ARG_LABEL,
+  TransformationFilters,
 } from "./filters";
 
 const delta200 = (label?: FilterArgNumber["label"]): FilterArgNumber => ({
@@ -27,7 +30,63 @@ const degrees = {
   default: 0,
   label: "degrees",
 };
-export const filterArgConfig: FilterArgConfig = {
+
+// placeholder
+export const filterArgTransformConfig: TransformationFilters = {
+  resize: [
+    falseSwitch,
+    [
+      [
+        {
+          min: 0,
+          max: 2000,
+          label: "width",
+          default: 0,
+        },
+        {
+          min: 0,
+          max: 2000,
+          label: "height",
+          default: 0,
+        },
+      ],
+    ],
+  ],
+  rotate: [falseSwitch, [degrees]],
+  crop: [
+    falseSwitch,
+    [
+      [
+        {
+          min: 0,
+          max: 2000,
+          label: "width",
+          default: 0,
+        },
+        {
+          min: 0,
+          max: 2000,
+          label: "height",
+          default: 0,
+        },
+        {
+          min: 0,
+          max: 2000,
+          label: "x",
+          default: 0,
+        },
+        {
+          min: 0,
+          max: 2000,
+          label: "y",
+          default: 0,
+        },
+      ],
+    ],
+  ],
+};
+
+const filterArgMainConfig: MainFilters = {
   brightness: delta200(),
   clip: delta100(),
   contrast: delta200(),
@@ -47,7 +106,6 @@ export const filterArgConfig: FilterArgConfig = {
   vibrance: delta200(),
   sharpen: delta100(),
   hue: delta100(),
-  fillColor: [falseSwitch, [{ default: "#ffffff" }]],
   colorize: [{ default: "#ffffff", label: "color" }, delta100("value")],
   channels: {
     red: delta200(),
@@ -84,57 +142,30 @@ export const filterArgConfig: FilterArgConfig = {
   edgeEnhance: { default: false },
   edgeDetect: { default: false },
   emboss: { default: false },
-  // resize: [
-  //   falseSwitch,
-  //   [
-  //     [
-  //       {
-  //         min: 0,
-  //         max: 2000,
-  //         label: "width",
-  //         default: 0,
-  //       },
-  //       {
-  //         min: 0,
-  //         max: 2000,
-  //         label: "height",
-  //         default: 0,
-  //       },
-  //     ],
-  //   ],
-  // ],
-  // rotate: [falseSwitch, [degrees]],
-  // crop: [
-  //   falseSwitch,
-  //   [
-  //     [
-  //       {
-  //         min: 0,
-  //         max: 2000,
-  //         label: "width",
-  //         default: 0,
-  //       },
-  //       {
-  //         min: 0,
-  //         max: 2000,
-  //         label: "height",
-  //         default: 0,
-  //       },
-  //       {
-  //         min: 0,
-  //         max: 2000,
-  //         label: "x",
-  //         default: 0,
-  //       },
-  //       {
-  //         min: 0,
-  //         max: 2000,
-  //         label: "y",
-  //         default: 0,
-  //       },
-  //     ],
-  //   ],
-  // ],
 };
 
-export const filtersRequireReloading = ["rotate", "resize", "crop"];
+const filterArgLayerConfig: LayerFilters = {
+  fillColor: [falseSwitch, [{ default: "#ffffff" }]],
+  setBlendingMode: {
+    default: "normal",
+    options: [
+      "normal",
+      "multiply",
+      "screen",
+      "overlay",
+      "difference",
+      "addition",
+      "exclusion",
+      "softLight",
+      "lighten",
+      "darken",
+    ],
+  },
+  opacity: delta100(),
+};
+
+// TODO: remove???
+export const filterArgConfig: FilterArgConfig = {
+  ...filterArgMainConfig,
+  ...filterArgLayerConfig,
+};
