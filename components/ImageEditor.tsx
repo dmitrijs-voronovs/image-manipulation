@@ -6,7 +6,10 @@ import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
 import { ValueConfig } from "../config/valueConfig";
-import { BASE_LAYER_IDX, N_OF_ADDITIONAL_LAYERS } from "./utils/layerConfig";
+import {
+  BASE_LAYER_IDX,
+  DEFAULT_N_OF_ADDITIONAL_LAYERS,
+} from "./utils/layerConfig";
 import { defaultImages, ImageData } from "./utils/imageConfig";
 import { defaultUserValue } from "../config/filterArgConfig";
 
@@ -14,13 +17,43 @@ const canvasId = "target";
 
 export type UserValues = Partial<ValueConfig>[];
 
-const initialUserConfig = Array.from({
-  length: 1 + N_OF_ADDITIONAL_LAYERS,
-}).map((_) => defaultUserValue);
+const getInitialUserConfig = (n: number, includeBaseLayer = true) =>
+  Array.from({
+    length: (includeBaseLayer ? 1 : 0) + n,
+  }).map((_) => defaultUserValue);
 
 export function ImageEditor() {
-  const [userValues, setUserValues] = useState<UserValues>(initialUserConfig);
+  const [additionalLayerCount, setAdditionalLayerCount] = useState(
+    DEFAULT_N_OF_ADDITIONAL_LAYERS
+  );
+  const [userValues, setUserValues] = useState<UserValues>(
+    getInitialUserConfig(additionalLayerCount)
+  );
+
   const [layerIdx, setLayerIdx] = useState<number>(BASE_LAYER_IDX);
+
+  useEffect(() => {
+    const baseLayer = 1;
+    const diff = userValues.length - baseLayer - additionalLayerCount;
+    const totalLayers = baseLayer + additionalLayerCount;
+    const layerCountIncreased = diff < 0;
+    console.log({ layerIdx, totalLayers });
+    if (layerCountIncreased) {
+      setUserValues((userValues) => [
+        ...userValues,
+        ...getInitialUserConfig(Math.abs(diff)),
+      ]);
+    } else {
+      if (layerIdx + 1 > totalLayers) {
+        console.log(123);
+        setLayerIdx(totalLayers - 1);
+      }
+      setUserValues((userValues) => userValues.slice(0, totalLayers));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [additionalLayerCount]);
+
+  console.log({ additionalLayerCount, userValues });
 
   const layerValues = useMemo(
     () => userValues[layerIdx],
@@ -37,7 +70,10 @@ export function ImageEditor() {
     [layerIdx]
   );
 
-  const resetAll = useCallback(() => setUserValues(initialUserConfig), []);
+  const resetAll = useCallback(
+    () => setUserValues(getInitialUserConfig(additionalLayerCount)),
+    [additionalLayerCount]
+  );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [images, setImages] = useState<ImageData[]>(defaultImages);
@@ -136,11 +172,14 @@ export function ImageEditor() {
           <ParameterForm
             downloadImgButtonRef={downloadImgButtonRef}
             images={images}
-            userConfig={layerValues}
-            setConfig={setLayerValues}
-            resetAllUserConfigs={resetAll}
+            userValues={userValues}
+            layerValues={layerValues}
+            setLayerValues={setLayerValues}
+            resetAllLayers={resetAll}
             layerIdx={layerIdx}
             setLayerIdx={setLayerIdx}
+            additionalLayerCount={additionalLayerCount}
+            setAdditionalLayerCount={setAdditionalLayerCount}
           />
         </Col>
         <Col span={24} style={{ flexWrap: "wrap" }}>

@@ -13,6 +13,8 @@ export function applyFilter(
     ? (caman.filter as unknown as CamanInstanceLayer)
     : (caman as CamanInstance);
 
+  console.log(filter, val, editor);
+
   if (Array.isArray(val)) {
     if (isValWithSwitch(val)) {
       const isFilterEnabled = val[0] as boolean;

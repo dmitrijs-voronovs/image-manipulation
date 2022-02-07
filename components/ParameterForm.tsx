@@ -8,8 +8,10 @@ import {
 } from "react";
 import {
   Button,
+  Dropdown,
   Form,
   Input,
+  Menu,
   Modal,
   notification,
   Radio,
@@ -22,7 +24,7 @@ import {
   getAllConfigs,
   saveConfig,
 } from "../store/config";
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, DownOutlined, EditOutlined } from "@ant-design/icons";
 import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
 import { downloadImagesInBulks } from "./utils/editAndDownload";
@@ -37,8 +39,12 @@ import {
 } from "../config/filterArgConfig";
 
 const { Title } = Typography;
-import { BASE_LAYER_IDX, N_OF_ADDITIONAL_LAYERS } from "./utils/layerConfig";
+import {
+  BASE_LAYER_IDX,
+  DEFAULT_N_OF_ADDITIONAL_LAYERS,
+} from "./utils/layerConfig";
 import { ImageData } from "./utils/imageConfig";
+import { UserValues } from "./ImageEditor";
 
 export const formLayout = {
   labelCol: { span: 4 },
@@ -51,35 +57,42 @@ export const tailLayout = {
 
 type ParameterFormProps = {
   downloadImgButtonRef: RefObject<HTMLAnchorElement>;
-  userConfig: Partial<ValueConfig>;
-  setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>>;
+  layerValues: Partial<ValueConfig>;
+  setLayerValues: Dispatch<SetStateAction<Partial<ValueConfig>>>;
   images: ImageData[];
-  resetAllUserConfigs: () => void;
+  resetAllLayers: () => void;
   layerIdx: number;
   setLayerIdx: Dispatch<SetStateAction<number>>;
+  userValues: UserValues;
+  additionalLayerCount: number;
+  setAdditionalLayerCount: Dispatch<SetStateAction<number>>;
 };
 
 export const ParameterForm: FC<ParameterFormProps> = ({
-  userConfig,
-  setConfig,
+  layerValues,
+  setLayerValues,
   downloadImgButtonRef,
   images,
-  resetAllUserConfigs,
+  resetAllLayers,
   layerIdx,
   setLayerIdx,
+  userValues,
+  additionalLayerCount,
+  setAdditionalLayerCount,
 }) => {
   const [configs, setConfigs] = useState<ConfigStorage>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [configName, setConfigName] = useState<string>("");
+  const [configName, setConfigName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  console.log("config", userConfig);
+  console.log("config", layerValues);
 
   const showModal = () => {
     setIsModalVisible(true);
   };
 
   const handleOk = () => {
-    const success = saveConfig(configName, userConfig);
+    const success = saveConfig(configName, layerValues);
     if (success) {
       setConfigName("");
       notification.success({ message: "Configuration saved successfully" });
@@ -102,18 +115,28 @@ export const ParameterForm: FC<ParameterFormProps> = ({
 
   useEffect(() => {
     form.resetFields();
-    form.setFieldsValue(userConfig);
+    form.setFieldsValue(layerValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layerIdx, form]);
 
   const onFinish = (values: any) => {
     console.log(values);
-    setConfig(values);
+    setLayerValues(values);
   };
 
   const onResetLayer = () => {
     form.resetFields();
-    setConfig(defaultUserValue);
+    setLayerValues(defaultUserValue);
+  };
+
+  const onResetAll = () => {
+    form.resetFields();
+    resetAllLayers();
+  };
+
+  const handleAddLayersClick = (e: { key: string }) => {
+    const addtionalLayers = Number(e.key);
+    setAdditionalLayerCount(addtionalLayers);
   };
 
   const onChange = (val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
@@ -123,7 +146,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
     onFinish(all);
   };
 
-  console.log({ userConfig });
+  console.log({ layerConfig: layerValues });
 
   return (
     <>
@@ -138,7 +161,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         </Title>
         <FormFields
           optionConfig={filterArgMainConfig}
-          userValues={userConfig}
+          userValues={layerValues}
         />
         {layerIdx !== BASE_LAYER_IDX && (
           <>
@@ -147,28 +170,42 @@ export const ParameterForm: FC<ParameterFormProps> = ({
             </Title>
             <FormFields
               optionConfig={filterArgLayerConfig}
-              userValues={userConfig}
+              userValues={layerValues}
             />
           </>
         )}
         {/*TODO: utilize row + col layout*/}
         <Form.Item {...tailLayout}>
           <Space direction={"vertical"}>
-            <Space>
+            <Space style={{ marginBottom: 8 }}>
               <Radio.Group
                 onChange={(e) => setLayerIdx(e.target.value)}
                 value={layerIdx}
-                style={{ marginBottom: 8 }}
               >
                 <Radio.Button key={BASE_LAYER_IDX} value={BASE_LAYER_IDX}>
                   Base layer
                 </Radio.Button>
-                {Array.from({ length: N_OF_ADDITIONAL_LAYERS }).map((_, i) => (
+                {Array.from({ length: additionalLayerCount }).map((_, i) => (
                   <Radio.Button key={i + 1} value={i + 1}>
                     Layer {i + 1}
                   </Radio.Button>
                 ))}
               </Radio.Group>
+              <Dropdown
+                overlay={
+                  <Menu onClick={handleAddLayersClick}>
+                    <Menu.Item key="0">0 layers</Menu.Item>
+                    <Menu.Item key="1">1 layer</Menu.Item>
+                    <Menu.Item key="2">2 layers</Menu.Item>
+                    <Menu.Item key="3">3 layers</Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button>
+                  <EditOutlined />
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
             </Space>
             {Object.keys(configs).length ? (
               <Space>
@@ -179,7 +216,8 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                       key={name}
                       onClick={() => {
                         form.resetFields();
-                        setConfig(config);
+                        form.setFieldsValue(config);
+                        setLayerValues(config);
                       }}
                     >
                       {name}
@@ -196,7 +234,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                   onClick={async () => {
                     try {
                       await window?.navigator.clipboard.writeText(
-                        JSON.stringify(userConfig, null, 2)
+                        JSON.stringify(layerValues, null, 2)
                       );
                       notification.success({
                         message: "Configuration was copied to clipboard",
@@ -216,7 +254,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                       if (resultStr) {
                         const sanitizedStr = sanitize(resultStr);
                         const obj = JSON.parse(sanitizedStr);
-                        if (typeof obj === "object") setConfig(obj);
+                        if (typeof obj === "object") setLayerValues(obj);
                       }
                     } catch (e) {
                       displayError();
@@ -228,14 +266,19 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                 <Button htmlType="button" onClick={onResetLayer}>
                   Reset Layer
                 </Button>
-                <Button htmlType="button" onClick={resetAllUserConfigs}>
+                <Button htmlType="button" onClick={onResetAll}>
                   Reset All
                 </Button>
                 <Button>
                   <a ref={downloadImgButtonRef}>Download</a>
                 </Button>
                 <Button
-                  onClick={() => downloadImagesInBulks(images, userConfig)}
+                  loading={isLoading}
+                  onClick={async () => {
+                    setIsLoading(true);
+                    await downloadImagesInBulks(images, userValues);
+                    setIsLoading(false);
+                  }}
                 >
                   Download All
                 </Button>
@@ -283,7 +326,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         </p>
         <p>Layer configuration:</p>
         <Typography.Text>
-          <pre>{JSON.stringify(userConfig, null, 2)}</pre>
+          <pre>{JSON.stringify(layerValues, null, 2)}</pre>
         </Typography.Text>
       </Modal>
     </>

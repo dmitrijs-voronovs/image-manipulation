@@ -14,18 +14,10 @@ export const editImage = (
   const baseLayer = userValues[0];
 
   Object.entries(baseLayer).forEach(([filter, rawVal]) => {
-    applyFilter(rawVal, filter, caman);
+    if (!Object.keys(filterArgLayerConfig).includes(filter))
+      applyFilter(rawVal, filter, caman);
   });
 
-  // caman.newLayer(function () {
-  //   this.setBlendingMode("normal");
-  //   this.copyParent();
-  //   this.opacity(90);
-  //   this.filter.invert();
-  //   this.filter.gamma(10);
-  // });
-
-  // console.log(userValues);
   userValues.slice(BASE_LAYER_IDX).map((layerValues, i) => {
     console.log(layerValues, i);
     caman.newLayer(function () {

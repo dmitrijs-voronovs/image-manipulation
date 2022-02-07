@@ -5,10 +5,11 @@ import { notification } from "antd";
 import { displayError } from "./displayError";
 import { ValueConfig } from "../../config/valueConfig";
 import { ImageData } from "./imageConfig";
+import { UserValues } from "../ImageEditor";
 
 export const downloadImagesInBulks = async (
   images: ImageData[],
-  config: Partial<ValueConfig>
+  config: UserValues
 ) => {
   const limit = pLimit(5);
   const promises = images.map(({ name, src }) =>
@@ -25,7 +26,7 @@ export const downloadImagesInBulks = async (
 const editAndDownload = async (
   name: string,
   src: string,
-  config: Partial<ValueConfig>
+  config: UserValues
 ) => {
   const sanitizedName = name.replace(new RegExp(/\W+/g), "");
   const canvasId = "canvas_" + sanitizedName;
