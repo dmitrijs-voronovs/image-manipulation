@@ -30,6 +30,10 @@ import { ValueConfig } from "../config/valueConfig";
 import { FormFields } from "./FormFields";
 import { debounce } from "lodash";
 import { convertFormValuesToConfig } from "./utils/valueConverter";
+import {
+  filterArgLayerConfig,
+  filterArgMainConfig,
+} from "../config/filterArgConfig";
 
 export const formLayout = {
   labelCol: { span: 4 },
@@ -55,7 +59,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   downloadImgButtonRef,
   images,
 }) => {
-  const [configs, setConfigs] = useState<ConfigStorage>(defaultConfig);
+  const [configs, setConfigs] = useState<ConfigStorage>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [configName, setConfigName] = useState<string>("");
 
@@ -112,7 +116,14 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         name="control-hooks"
         onValuesChange={debounce(onChange, 200)}
       >
-        <FormFields config={userConfig} />
+        <FormFields
+          optionConfig={filterArgMainConfig}
+          userValues={userConfig}
+        />
+        {/*<FormFields*/}
+        {/*  optionConfig={filterArgLayerConfig}*/}
+        {/*  userValues={userConfig}*/}
+        {/*/>*/}
         <Form.Item {...tailLayout}>
           <Space direction={"vertical"}>
             {Object.keys(configs).length ? (

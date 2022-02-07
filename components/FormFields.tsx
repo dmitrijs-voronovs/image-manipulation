@@ -1,22 +1,23 @@
 import { FC } from "react";
 import { ValueConfig } from "../config/valueConfig";
-import { filterArgConfig } from "../config/filterArgConfig";
 import { DynamicField } from "./DynamicField";
 import {
   FilterArgComplex,
   FilterArgPrimitive,
+  FilterConfiguration,
   WithSwitch,
 } from "../config/filters";
 import { isValWithSwitch } from "./utils/isValWithSwitch";
 import { Form } from "antd";
 
-export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
-  config,
-}) => {
+export const FormFields: FC<{
+  userValues: Partial<ValueConfig>;
+  optionConfig: FilterConfiguration;
+}> = ({ userValues, optionConfig }) => {
   return (
     <>
-      {Object.entries(filterArgConfig).map(([name, fieldConfig]) => {
-        const val = config[name];
+      {Object.entries(optionConfig).map(([name, fieldConfig]) => {
+        const filterValue = userValues[name];
         if (Array.isArray(fieldConfig)) {
           if (isValWithSwitch(fieldConfig)) {
             const switchValue = fieldConfig[0];
@@ -32,7 +33,7 @@ export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
                   name={[name, "0"]}
                   key={switchValue.label}
                   config={switchValue}
-                  value={val?.[0] || switchValue.default}
+                  value={filterValue?.[0] || switchValue.default}
                 />
                 {valuesToRender.map((v, i) => {
                   return (
@@ -43,8 +44,8 @@ export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
                       config={v}
                       value={
                         isSimpleValue
-                          ? val?.[1]?.[0]
-                          : val?.[1]?.[0]?.[i] || v.default
+                          ? filterValue?.[1]?.[0]
+                          : filterValue?.[1]?.[0]?.[i] || v.default
                       }
                     />
                   );
@@ -62,7 +63,7 @@ export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
                     name={[name, String(i)]}
                     key={v.label || i}
                     config={v}
-                    value={val?.[i] || v.default}
+                    value={filterValue?.[i] || v.default}
                   />
                 );
               })}
@@ -80,7 +81,7 @@ export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
                     name={[name, k]}
                     key={k}
                     config={v}
-                    value={val?.[k] || v.default}
+                    value={filterValue?.[k] || v.default}
                   />
                 );
               })}
@@ -94,7 +95,7 @@ export const FormFields: FC<{ config: Partial<ValueConfig> }> = ({
             label={name}
             name={name}
             config={fieldConfig as FilterArgPrimitive}
-            value={val}
+            value={filterValue}
           />
         );
       })}

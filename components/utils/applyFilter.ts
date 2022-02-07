@@ -1,20 +1,17 @@
-import { CamanInstance } from "../../types/Caman";
+import { CamanInstance, CamanInstanceLayer } from "../../types/Caman";
 import { getDefaultFilterValue } from "../../config/utils/getDefaultFilterValue";
 import { isValWithSwitch } from "./isValWithSwitch";
 
 export function applyFilter(
   rawVal: any,
   filter: string,
-  caman: CamanInstance,
+  caman: CamanInstance | CamanInstanceLayer,
   isFilter: boolean = false
 ) {
-  // caman.filter.greyscale();
-  // caman.setBlendingMode("normal");
-  // caman.opacity(100);
-  // return caman.filter.brightness(30);
-
   const val = rawVal ?? getDefaultFilterValue(filter);
-  const editor = isFilter ? caman.filter : caman;
+  const editor = isFilter
+    ? (caman.filter as unknown as CamanInstanceLayer)
+    : (caman as CamanInstance);
 
   if (Array.isArray(val)) {
     if (isValWithSwitch(val)) {
@@ -24,16 +21,21 @@ export function applyFilter(
         const args = Array.isArray(argWithSwitch)
           ? argWithSwitch.map((v: any) => v)
           : argWithSwitch;
+        // @ts-ignore
         editor[filter](args);
       }
     } else {
+      // @ts-ignore
       editor[filter](...val);
     }
   } else if (typeof val === "boolean") {
+    // @ts-ignore
     if (val) editor[filter]();
   } else if (typeof val === "string") {
+    // @ts-ignore
     if (val) editor[filter](val);
   } else {
+    // @ts-ignore
     editor[filter](val);
   }
 }

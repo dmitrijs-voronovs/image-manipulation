@@ -1,20 +1,33 @@
-import {FilterArgConfig} from "../config/filters";
+import { FilterArgConfig, LayerFilters, MainFilters } from "../config/filters";
 
-type ModificationFunctions = {
-    [Key in keyof FilterArgConfig]: Function
-}
-export type CamanInstance = ModificationFunctions & {
-    reset: Function;
-    render(cb?: Function): void;
-    newLayer(cb?: (this: Omit<CamanInstance, keyof ModificationFunctions> & { filter: ModificationFunctions }) => void): void
-}
+type FilterFunctions = {
+  [Key in keyof MainFilters]: Function;
+};
+type LayerFilterFunctions = {
+  [Key in keyof LayerFilters]: Function;
+};
+export type CamanInstanceLayer = Omit<CamanInstance, keyof FilterFunctions> & {
+  filter: FilterFunctions & LayerFilterFunctions;
+};
+
+export type CamanInstance = FilterFunctions & {
+  reset: Function;
+  render(cb?: Function): void;
+  newLayer(cb?: (this: CamanInstanceLayer) => void): void;
+};
 export type Caman = {
-    (imgId: string | HTMLImageElement | HTMLCanvasElement, init: (this: CamanInstance) => void): CamanInstance;
-    (canvasId: string | HTMLImageElement | HTMLCanvasElement, src: string, init: (this: CamanInstance) => void): CamanInstance;
-
+  (
+    imgId: string | HTMLImageElement | HTMLCanvasElement,
+    init: (this: CamanInstance) => void
+  ): CamanInstance;
+  (
+    canvasId: string | HTMLImageElement | HTMLCanvasElement,
+    src: string,
+    init: (this: CamanInstance) => void
+  ): CamanInstance;
 };
 declare global {
-    interface Window {
-        Caman?: Caman
-    }
+  interface Window {
+    Caman?: Caman;
+  }
 }

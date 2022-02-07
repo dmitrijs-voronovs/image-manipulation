@@ -86,7 +86,7 @@ export const filterArgTransformConfig: TransformationFilters = {
   ],
 };
 
-const filterArgMainConfig: MainFilters = {
+export const filterArgMainConfig: MainFilters = {
   brightness: delta200(),
   clip: delta100(),
   contrast: delta200(),
@@ -144,7 +144,7 @@ const filterArgMainConfig: MainFilters = {
   emboss: { default: false },
 };
 
-const filterArgLayerConfig: LayerFilters = {
+export const filterArgLayerConfig: LayerFilters = {
   fillColor: [falseSwitch, [{ default: "#ffffff" }]],
   setBlendingMode: {
     default: "normal",

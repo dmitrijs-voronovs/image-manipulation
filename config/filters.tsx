@@ -32,8 +32,9 @@ export type FilterArgComplex =
 export type BaseFilterArgs = FilterArgPrimitive | FilterArgComplex;
 export type WithSwitch<T extends BaseFilterArgs> = [FilterArgSwitch, [T]];
 export type FilterArgs = BaseFilterArgs | WithSwitch<BaseFilterArgs>;
+export type FilterConfiguration = Record<string, FilterArgs>;
 
-export interface MainFilters extends Record<string, FilterArgs> {
+export interface MainFilters extends FilterConfiguration {
   brightness: FilterArgNumber;
   channels: {
     red: FilterArgNumber;
@@ -74,7 +75,7 @@ export interface MainFilters extends Record<string, FilterArgs> {
   threshold: WithSwitch<FilterArgNumber>;
 }
 
-export interface TransformationFilters extends Record<string, FilterArgs> {
+export interface TransformationFilters extends FilterConfiguration {
   crop: WithSwitch<
     [FilterArgNumber, FilterArgNumber, FilterArgNumber, FilterArgNumber]
   >;
@@ -82,7 +83,7 @@ export interface TransformationFilters extends Record<string, FilterArgs> {
   rotate: WithSwitch<FilterArgNumber>;
 }
 
-export interface LayerFilters extends Record<string, FilterArgs> {
+export interface LayerFilters extends FilterConfiguration {
   setBlendingMode: FilterArgString;
   opacity: FilterArgNumber;
   fillColor: WithSwitch<FilterArgString>;
