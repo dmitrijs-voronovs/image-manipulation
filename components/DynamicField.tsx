@@ -18,7 +18,7 @@ export const DynamicField: FC<{
   // const config = filterArgConfig[label];
   if (typeof config.default === "boolean") {
     return (
-      <Form.Item name={name} label={label} required={true}>
+      <Form.Item name={name} label={label}>
         <Switch
           defaultChecked={
             typeof value !== "undefined"
@@ -33,7 +33,7 @@ export const DynamicField: FC<{
   if (typeof config.default === "string") {
     if ((config as FilterArgString).options) {
       return (
-        <Form.Item name={name} label={label} required={true}>
+        <Form.Item name={name} label={label}>
           <Select
             defaultValue={
               value ? String(value) : (config as FilterArgString).default
@@ -50,7 +50,7 @@ export const DynamicField: FC<{
     }
 
     return (
-      <Form.Item name={name} label={label} required={true}>
+      <Form.Item name={name} label={label}>
         <Input
           type={"color"}
           defaultValue={String(value) || (config as FilterArgString).default}

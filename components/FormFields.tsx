@@ -27,7 +27,7 @@ export const FormFields: FC<{
               ? [values]
               : values) as unknown as FilterArgPrimitive[];
             return (
-              <Form.Item label={name} wrapperCol={{ offset: 2, span: 16 }}>
+              <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
                 <DynamicField
                   label={switchValue.label!}
                   name={[name, "0"]}
@@ -55,7 +55,7 @@ export const FormFields: FC<{
           }
 
           return (
-            <Form.Item label={name} wrapperCol={{ offset: 2, span: 16 }}>
+            <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
               {(fieldConfig as FilterArgPrimitive[]).map((v, i) => {
                 return (
                   <DynamicField
@@ -73,7 +73,7 @@ export const FormFields: FC<{
 
         if (!("default" in fieldConfig)) {
           return (
-            <Form.Item label={name} wrapperCol={{ offset: 2, span: 16 }}>
+            <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
               {Object.entries(fieldConfig).map(([k, v]) => {
                 return (
                   <DynamicField

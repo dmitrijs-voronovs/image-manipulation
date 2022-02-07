@@ -8,6 +8,7 @@ import {
 } from "react";
 import {
   Button,
+  Divider,
   Dropdown,
   Form,
   Input,
@@ -149,18 +150,21 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         name="control-hooks"
         onValuesChange={debounce(onChange, 200)}
       >
-        <Title level={3} style={{ textAlign: "center" }}>
-          Filter configuration
-        </Title>
+        <Divider orientation={"center"}>Filter configuration</Divider>
+
+        {/*<Title level={3} style={{ textAlign: "center" }}>*/}
+        {/*  Filter configuration*/}
+        {/*</Title>*/}
         <FormFields
           optionConfig={filterArgMainConfig}
           userValues={layerValues}
         />
         {layerIdx !== BASE_LAYER_IDX && (
           <>
-            <Title level={3} style={{ textAlign: "center" }}>
-              Layer configuration
-            </Title>
+            <Divider orientation={"center"}>Layer configuration</Divider>
+            {/*<Title level={3} style={{ textAlign: "center" }}>*/}
+            {/*  Layer configuration*/}
+            {/*</Title>*/}
             <FormFields
               optionConfig={filterArgLayerConfig}
               userValues={layerValues}
@@ -168,130 +172,132 @@ export const ParameterForm: FC<ParameterFormProps> = ({
           </>
         )}
         {/*TODO: utilize row + col layout*/}
-        <Form.Item {...tailLayout}>
-          <Space direction={"vertical"}>
-            <Space style={{ marginBottom: 8 }}>
-              <Radio.Group
-                onChange={(e) => setLayerIdx(e.target.value)}
-                value={layerIdx}
-              >
-                <Radio.Button key={BASE_LAYER_IDX} value={BASE_LAYER_IDX}>
-                  Base layer
+        {/*<Form.Item {...tailLayout}>*/}
+        <Divider orientation={"center"}>Actions</Divider>
+        <Form.Item label={"Layers"}>
+          <Space wrap>
+            <Radio.Group
+              onChange={(e) => setLayerIdx(e.target.value)}
+              value={layerIdx}
+            >
+              <Radio.Button key={BASE_LAYER_IDX} value={BASE_LAYER_IDX}>
+                Base layer
+              </Radio.Button>
+              {Array.from({ length: additionalLayerCount }).map((_, i) => (
+                <Radio.Button key={i + 1} value={i + 1}>
+                  Layer {i + 1}
                 </Radio.Button>
-                {Array.from({ length: additionalLayerCount }).map((_, i) => (
-                  <Radio.Button key={i + 1} value={i + 1}>
-                    Layer {i + 1}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
-              <Dropdown
-                overlay={
-                  <Menu onClick={handleAddLayersClick}>
-                    <Menu.Item key="0">0 layers</Menu.Item>
-                    <Menu.Item key="1">1 layer</Menu.Item>
-                    <Menu.Item key="2">2 layers</Menu.Item>
-                    <Menu.Item key="3">3 layers</Menu.Item>
-                  </Menu>
-                }
-              >
-                <Button>
-                  <EditOutlined />
-                  <DownOutlined />
-                </Button>
-              </Dropdown>
-            </Space>
-            {Object.keys(configs).length ? (
-              <Space>
-                Apply saved layer configurations:
-                <Space wrap>
-                  {Object.entries(configs).map(([name, config]) => (
-                    <Button
-                      key={name}
-                      onClick={() => {
-                        form.resetFields();
-                        form.setFieldsValue(config);
-                        setLayerValues(config);
-                      }}
-                    >
-                      {name}
-                    </Button>
-                  ))}
-                </Space>
-              </Space>
-            ) : null}
-            <Space>
-              Configuration actions:{" "}
-              <Space wrap>
-                <Button onClick={showModal}>Save</Button>
+              ))}
+            </Radio.Group>
+            <Dropdown
+              overlay={
+                <Menu onClick={handleAddLayersClick}>
+                  <Menu.Item key="0">0 layers</Menu.Item>
+                  <Menu.Item key="1">1 layer</Menu.Item>
+                  <Menu.Item key="2">2 layers</Menu.Item>
+                  <Menu.Item key="3">3 layers</Menu.Item>
+                </Menu>
+              }
+            >
+              <Button>
+                <EditOutlined />
+                <DownOutlined />
+              </Button>
+            </Dropdown>
+          </Space>
+        </Form.Item>
+        {Object.keys(configs).length ? (
+          <Form.Item label={"Apply saved configs"}>
+            <Space wrap>
+              {Object.entries(configs).map(([name, config]) => (
                 <Button
-                  onClick={async () => {
-                    try {
-                      await window?.navigator.clipboard.writeText(
-                        JSON.stringify(layerValues, null, 2)
-                      );
-                      notification.success({
-                        message: "Configuration was copied to clipboard",
-                      });
-                    } catch (e) {
-                      displayError();
-                    }
-                  }}
-                >
-                  Copy <CopyOutlined />
-                </Button>
-                <Button
-                  onClick={async () => {
-                    try {
-                      const resultStr =
-                        await window?.navigator.clipboard.readText();
-                      if (resultStr) {
-                        const sanitizedStr = sanitize(resultStr);
-                        const obj = JSON.parse(sanitizedStr);
-                        if (typeof obj === "object") setLayerValues(obj);
-                      }
-                    } catch (e) {
-                      displayError();
-                    }
-                  }}
-                >
-                  Paste <CopyOutlined />
-                </Button>
-                <Button htmlType="button" onClick={onResetLayer}>
-                  Reset Layer
-                </Button>
-                <Button htmlType="button" onClick={onResetAll}>
-                  Reset All
-                </Button>
-                <Button>
-                  <a ref={downloadImgButtonRef}>Download</a>
-                </Button>
-                <Button
-                  loading={isLoading}
-                  onClick={async () => {
-                    setIsLoading(true);
-                    await downloadImagesInBulks(images, userValues);
-                    setIsLoading(false);
-                  }}
-                >
-                  Download All
-                </Button>
-                <Button
+                  key={name}
                   onClick={() => {
-                    const success = deleteConfigs();
-                    if (success) {
-                      notification.success({
-                        message: "Configurations deleted successfully",
-                      });
-                      setConfigs({});
-                    } else {
-                      displayError();
-                    }
+                    form.resetFields();
+                    form.setFieldsValue(config);
+                    setLayerValues(config);
                   }}
                 >
-                  Delete saved configurations
+                  {name}
                 </Button>
-              </Space>
+              ))}
             </Space>
+          </Form.Item>
+        ) : null}
+        <Form.Item label={"Config actions"}>
+          <Space wrap>
+            <Button onClick={showModal}>Save</Button>
+            <Button
+              onClick={async () => {
+                try {
+                  await window?.navigator.clipboard.writeText(
+                    JSON.stringify(layerValues, null, 2)
+                  );
+                  notification.success({
+                    message: "Configuration was copied to clipboard",
+                  });
+                } catch (e) {
+                  displayError();
+                }
+              }}
+            >
+              Copy <CopyOutlined />
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const resultStr =
+                    await window?.navigator.clipboard.readText();
+                  if (resultStr) {
+                    const sanitizedStr = sanitize(resultStr);
+                    const obj = JSON.parse(sanitizedStr);
+                    if (typeof obj === "object") setLayerValues(obj);
+                  }
+                } catch (e) {
+                  displayError();
+                }
+              }}
+            >
+              Paste <CopyOutlined />
+            </Button>
+            <Button htmlType="button" onClick={onResetLayer}>
+              Reset Layer
+            </Button>
+            <Button htmlType="button" onClick={onResetAll}>
+              Reset All
+            </Button>
+            <Button
+              onClick={() => {
+                const success = deleteConfigs();
+                if (success) {
+                  notification.success({
+                    message: "Configurations deleted successfully",
+                  });
+                  setConfigs({});
+                } else {
+                  displayError();
+                }
+              }}
+            >
+              Delete all saved
+            </Button>
+          </Space>
+        </Form.Item>
+        <Form.Item label={"Image download"}>
+          <Space wrap>
+            <Button>
+              <a ref={downloadImgButtonRef}>Download</a>
+            </Button>
+            <Button
+              loading={isLoading}
+              onClick={async () => {
+                setIsLoading(true);
+                await downloadImagesInBulks(images, userValues);
+                setIsLoading(false);
+              }}
+            >
+              Download All
+            </Button>
           </Space>
         </Form.Item>
       </Form>
@@ -311,7 +317,6 @@ export const ParameterForm: FC<ParameterFormProps> = ({
             onInput={(val) =>
               setConfigName((val.target as HTMLInputElement).value)
             }
-            required
             min={5}
             placeholder={"config name"}
             autoFocus
