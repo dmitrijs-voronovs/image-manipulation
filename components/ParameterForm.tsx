@@ -12,6 +12,7 @@ import {
   Input,
   Modal,
   notification,
+  Radio,
   Space,
   Typography,
 } from "antd";
@@ -25,15 +26,19 @@ import { CopyOutlined } from "@ant-design/icons";
 import { sanitize } from "./utils/Sanitize";
 import { displayError } from "./utils/displayError";
 import { downloadImagesInBulks } from "./utils/editAndDownload";
-import { ImageData } from "./ImageEditor";
 import { ValueConfig } from "../config/valueConfig";
 import { FormFields } from "./FormFields";
 import { debounce } from "lodash";
 import { convertFormValuesToConfig } from "./utils/valueConverter";
 import {
+  defaultUserValue,
   filterArgLayerConfig,
   filterArgMainConfig,
 } from "../config/filterArgConfig";
+
+const { Title } = Typography;
+import { BASE_LAYER_IDX, N_OF_ADDITIONAL_LAYERS } from "./utils/layerConfig";
+import { ImageData } from "./utils/imageConfig";
 
 export const formLayout = {
   labelCol: { span: 4 },
@@ -49,15 +54,19 @@ type ParameterFormProps = {
   userConfig: Partial<ValueConfig>;
   setConfig: Dispatch<SetStateAction<Partial<ValueConfig>>>;
   images: ImageData[];
+  resetAllUserConfigs: () => void;
+  layerIdx: number;
+  setLayerIdx: Dispatch<SetStateAction<number>>;
 };
-
-const defaultConfig: Partial<ValueConfig> = {};
 
 export const ParameterForm: FC<ParameterFormProps> = ({
   userConfig,
   setConfig,
   downloadImgButtonRef,
   images,
+  resetAllUserConfigs,
+  layerIdx,
+  setLayerIdx,
 }) => {
   const [configs, setConfigs] = useState<ConfigStorage>({});
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -90,15 +99,21 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   }, []);
 
   const [form] = Form.useForm<ValueConfig>();
+
+  useEffect(() => {
+    form.resetFields();
+    form.setFieldsValue(userConfig);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layerIdx, form]);
+
   const onFinish = (values: any) => {
     console.log(values);
     setConfig(values);
   };
 
-  const onReset = () => {
+  const onResetLayer = () => {
     form.resetFields();
-    // form.setFieldsValue({});
-    setConfig(defaultConfig);
+    setConfig(defaultUserValue);
   };
 
   const onChange = (val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
@@ -108,6 +123,8 @@ export const ParameterForm: FC<ParameterFormProps> = ({
     onFinish(all);
   };
 
+  console.log({ userConfig });
+
   return (
     <>
       <Form
@@ -116,19 +133,46 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         name="control-hooks"
         onValuesChange={debounce(onChange, 200)}
       >
+        <Title level={3} style={{ textAlign: "center" }}>
+          Filter configuration
+        </Title>
         <FormFields
           optionConfig={filterArgMainConfig}
           userValues={userConfig}
         />
-        {/*<FormFields*/}
-        {/*  optionConfig={filterArgLayerConfig}*/}
-        {/*  userValues={userConfig}*/}
-        {/*/>*/}
+        {layerIdx !== BASE_LAYER_IDX && (
+          <>
+            <Title level={3} style={{ textAlign: "center" }}>
+              Layer configuration
+            </Title>
+            <FormFields
+              optionConfig={filterArgLayerConfig}
+              userValues={userConfig}
+            />
+          </>
+        )}
+        {/*TODO: utilize row + col layout*/}
         <Form.Item {...tailLayout}>
           <Space direction={"vertical"}>
+            <Space>
+              <Radio.Group
+                onChange={(e) => setLayerIdx(e.target.value)}
+                value={layerIdx}
+                style={{ marginBottom: 8 }}
+              >
+                <Radio.Button key={BASE_LAYER_IDX} value={BASE_LAYER_IDX}>
+                  Base layer
+                </Radio.Button>
+                {Array.from({ length: N_OF_ADDITIONAL_LAYERS }).map((_, i) => (
+                  <Radio.Button key={i + 1} value={i + 1}>
+                    Layer {i + 1}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </Space>
             {Object.keys(configs).length ? (
               <Space>
-                Apply saved configurations:
+                Apply saved layer configurations:
                 <Space wrap>
                   {Object.entries(configs).map(([name, config]) => (
                     <Button
@@ -181,8 +225,11 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                 >
                   Paste <CopyOutlined />
                 </Button>
-                <Button htmlType="button" onClick={onReset}>
-                  Reset
+                <Button htmlType="button" onClick={onResetLayer}>
+                  Reset Layer
+                </Button>
+                <Button htmlType="button" onClick={resetAllUserConfigs}>
+                  Reset All
                 </Button>
                 <Button>
                   <a ref={downloadImgButtonRef}>Download</a>
@@ -205,7 +252,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                     }
                   }}
                 >
-                  Delete all saved
+                  Delete saved configurations
                 </Button>
               </Space>
             </Space>
@@ -213,7 +260,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         </Form.Item>
       </Form>
       <Modal
-        title="Save modal"
+        title="Save layer configuration"
         visible={isModalVisible}
         onOk={handleOk}
         okButtonProps={configName ? {} : { disabled: true }}
@@ -234,7 +281,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
             autoFocus
           />
         </p>
-        <p>Configuration:</p>
+        <p>Layer configuration:</p>
         <Typography.Text>
           <pre>{JSON.stringify(userConfig, null, 2)}</pre>
         </Typography.Text>

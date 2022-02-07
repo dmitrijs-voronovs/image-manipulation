@@ -1,8 +1,8 @@
 import { ChangeEvent, FC, useRef } from "react";
 import { getFileData } from "./utils/getFileData";
-import { ImageData } from "./ImageEditor";
 import { displayError } from "./utils/displayError";
 import { Button } from "antd";
+import { ImageData } from "./utils/imageConfig";
 
 type FileUploadButtonProps = {
   onFileLoaded(images: ImageData[]): void;

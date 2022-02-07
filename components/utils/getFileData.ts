@@ -1,4 +1,4 @@
-import { ImageData } from "../ImageEditor";
+import { ImageData } from "./imageConfig";
 
 export const getFileData = async (file: File): Promise<ImageData> =>
   new Promise((res, rej) => {

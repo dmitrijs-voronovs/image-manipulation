@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { Button, Space } from "antd";
-import { defaultImages, ImageData } from "./ImageEditor";
 import { FileUploadButton } from "./FileUploadButton";
+import { defaultImages, ImageData } from "./utils/imageConfig";
 
 type ImageGalleryProps = {
   changeImage(img: ImageData): void;

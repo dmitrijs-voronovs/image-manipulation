@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CamanInstance } from "../types/Caman";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Col, Row, Space } from "antd";
@@ -6,23 +6,39 @@ import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
 import { ValueConfig } from "../config/valueConfig";
+import { BASE_LAYER_IDX, N_OF_ADDITIONAL_LAYERS } from "./utils/layerConfig";
+import { defaultImages, ImageData } from "./utils/imageConfig";
+import { defaultUserValue } from "../config/filterArgConfig";
 
 const canvasId = "target";
 
-export type ImageData = {
-  src: string;
-  name: string;
-};
+export type UserValues = Partial<ValueConfig>[];
 
-export const defaultImages: ImageData[] = Array.from({ length: 25 }).map(
-  (_, i) => ({ src: `/${i < 10 ? "0" + i : i}.jpg`, name: `original-${i}` })
-);
-
-export const BASE_LAYER_IDX = 0;
+const initialUserConfig = Array.from({
+  length: 1 + N_OF_ADDITIONAL_LAYERS,
+}).map((_) => defaultUserValue);
 
 export function ImageEditor() {
-  const [config, setConfig] = useState<Partial<ValueConfig>>({});
+  const [userValues, setUserValues] = useState<UserValues>(initialUserConfig);
   const [layerIdx, setLayerIdx] = useState<number>(BASE_LAYER_IDX);
+
+  const layerValues = useMemo(
+    () => userValues[layerIdx],
+    [layerIdx, userValues]
+  );
+  const setLayerValues = useCallback(
+    (newConfig: Partial<ValueConfig>) => {
+      setUserValues((oldConfig) => {
+        const configCopy = [...oldConfig];
+        configCopy[layerIdx] = newConfig;
+        return configCopy;
+      });
+    },
+    [layerIdx]
+  );
+
+  const resetAll = useCallback(() => setUserValues(initialUserConfig), []);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [images, setImages] = useState<ImageData[]>(defaultImages);
   const [currentImage, setCurrentImage] = useState<ImageData | null>(null);
@@ -45,10 +61,10 @@ export function ImageEditor() {
       setIsLoading(true);
 
       window.Caman(`#target`, currentImage.src, function () {
-        editImage(this, config, () => onFinishRender(this));
+        editImage(this, userValues, () => onFinishRender(this));
       });
     }
-  }, [config, currentImage, onFinishRender]);
+  }, [currentImage, userValues, onFinishRender]);
 
   function changeImage(newImg: ImageData) {
     const canv = document.getElementById(canvasId);
@@ -120,8 +136,11 @@ export function ImageEditor() {
           <ParameterForm
             downloadImgButtonRef={downloadImgButtonRef}
             images={images}
-            userConfig={config}
-            setConfig={setConfig}
+            userConfig={layerValues}
+            setConfig={setLayerValues}
+            resetAllUserConfigs={resetAll}
+            layerIdx={layerIdx}
+            setLayerIdx={setLayerIdx}
           />
         </Col>
         <Col span={24} style={{ flexWrap: "wrap" }}>

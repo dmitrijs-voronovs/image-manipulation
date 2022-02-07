@@ -62,7 +62,7 @@ export const DynamicField: FC<{
   if (typeof config.default === "number") {
     const max = (config as FilterArgNumber).max;
     const min = (config as FilterArgNumber).min;
-    const step = max / 100;
+    const step = (config as FilterArgNumber).step || max / 100;
     // const marks = Array.from({length: max / 10}).map((a,i) => {
     //
     // })

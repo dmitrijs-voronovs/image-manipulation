@@ -6,10 +6,10 @@ export function applyFilter(
   rawVal: any,
   filter: string,
   caman: CamanInstance | CamanInstanceLayer,
-  isFilter: boolean = false
+  applyAsFilter: boolean = false
 ) {
   const val = rawVal ?? getDefaultFilterValue(filter);
-  const editor = isFilter
+  const editor = applyAsFilter
     ? (caman.filter as unknown as CamanInstanceLayer)
     : (caman as CamanInstance);
 
@@ -36,6 +36,6 @@ export function applyFilter(
     if (val) editor[filter](val);
   } else {
     // @ts-ignore
-    editor[filter](val);
+    if (val) editor[filter](val);
   }
 }

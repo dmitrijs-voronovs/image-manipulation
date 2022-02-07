@@ -7,6 +7,7 @@ import {
   SWITCH_ARG_LABEL,
   TransformationFilters,
 } from "./filters";
+import { ValueConfig } from "./valueConfig";
 
 const delta200 = (label?: FilterArgNumber["label"]): FilterArgNumber => ({
   min: -100,
@@ -98,7 +99,7 @@ export const filterArgMainConfig: MainFilters = {
   },
   noise: {
     min: 0,
-    max: 100,
+    max: 300,
     default: 0,
   }, // TODO: add filter arg
   saturation: delta200(),
@@ -169,3 +170,5 @@ export const filterArgConfig: FilterArgConfig = {
   ...filterArgMainConfig,
   ...filterArgLayerConfig,
 };
+
+export const defaultUserValue: Partial<ValueConfig> = {};

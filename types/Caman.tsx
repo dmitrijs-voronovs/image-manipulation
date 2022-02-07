@@ -6,9 +6,11 @@ type FilterFunctions = {
 type LayerFilterFunctions = {
   [Key in keyof LayerFilters]: Function;
 };
-export type CamanInstanceLayer = Omit<CamanInstance, keyof FilterFunctions> & {
-  filter: FilterFunctions & LayerFilterFunctions;
-};
+// type AdditionalLayerFunctions
+export type CamanInstanceLayer = Omit<CamanInstance, keyof FilterFunctions> &
+  LayerFilterFunctions & {
+    filter: FilterFunctions;
+  };
 
 export type CamanInstance = FilterFunctions & {
   reset: Function;
