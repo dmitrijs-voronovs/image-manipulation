@@ -12,7 +12,6 @@ export function getDefaultFilterValue(filterName: string) {
         : argWithSwitch.default;
       return [filter[0].default, [args]];
     }
-    console.log("converting", filterName, filter);
     return (filter as FilterArgPrimitive[]).map((v) => v.default);
   }
 

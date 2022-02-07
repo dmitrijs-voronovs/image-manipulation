@@ -31,7 +31,6 @@ const editAndDownload = async (
   const sanitizedName = name.replace(new RegExp(/\W+/g), "");
   const canvasId = "canvas_" + sanitizedName;
   const el = createCanvas(canvasId);
-  console.log(el);
 
   return new Promise((res, rej) => {
     if (window.Caman) {

@@ -37,7 +37,6 @@ export function ImageEditor() {
     const diff = userValues.length - baseLayer - additionalLayerCount;
     const totalLayers = baseLayer + additionalLayerCount;
     const layerCountIncreased = diff < 0;
-    console.log({ layerIdx, totalLayers });
     if (layerCountIncreased) {
       setUserValues((userValues) => [
         ...userValues,
@@ -45,15 +44,12 @@ export function ImageEditor() {
       ]);
     } else {
       if (layerIdx + 1 > totalLayers) {
-        console.log(123);
         setLayerIdx(totalLayers - 1);
       }
       setUserValues((userValues) => userValues.slice(0, totalLayers));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [additionalLayerCount]);
-
-  console.log({ additionalLayerCount, userValues });
 
   const layerValues = useMemo(
     () => userValues[layerIdx],

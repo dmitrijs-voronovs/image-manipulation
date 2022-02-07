@@ -85,8 +85,6 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   const [configName, setConfigName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log("config", layerValues);
-
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -120,7 +118,6 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   }, [layerIdx, form]);
 
   const onFinish = (values: any) => {
-    console.log(values);
     setLayerValues(values);
   };
 
@@ -140,13 +137,9 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   };
 
   const onChange = (val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
-    console.log({ val, all });
-
     convertFormValuesToConfig(all);
     onFinish(all);
   };
-
-  console.log({ layerConfig: layerValues });
 
   return (
     <>

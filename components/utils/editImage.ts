@@ -19,7 +19,6 @@ export const editImage = (
   });
 
   userValues.slice(BASE_LAYER_IDX).map((layerValues, i) => {
-    console.log(layerValues, i);
     caman.newLayer(function () {
       this.copyParent();
       this.opacity(0);
@@ -29,7 +28,6 @@ export const editImage = (
         if (Object.keys(filterArgLayerConfig).includes(filter)) {
           applyFilter(rawVal, filter, this);
         } else {
-          console.log(filter, rawVal);
           applyFilter(rawVal, filter, this, true);
         }
       });
