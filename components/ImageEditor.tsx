@@ -9,18 +9,13 @@ import { ValueConfig } from "../config/valueConfig";
 import {
   BASE_LAYER_IDX,
   DEFAULT_N_OF_ADDITIONAL_LAYERS,
+  getInitialUserConfig,
 } from "./utils/layerConfig";
 import { defaultImages, ImageData } from "./utils/imageConfig";
-import { defaultUserValue } from "../config/filterArgConfig";
 
 const canvasId = "target";
 
 export type UserValues = Partial<ValueConfig>[];
-
-const getInitialUserConfig = (n: number, includeBaseLayer = true) =>
-  Array.from({
-    length: (includeBaseLayer ? 1 : 0) + n,
-  }).map((_) => defaultUserValue);
 
 export function ImageEditor() {
   const [additionalLayerCount, setAdditionalLayerCount] = useState(
