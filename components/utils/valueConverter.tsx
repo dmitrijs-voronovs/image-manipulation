@@ -40,7 +40,13 @@ export function convertFormValuesToConfig(all: Partial<ValueConfig>) {
           all[field] = convertArr(value, def);
         }
       } else {
-        all[field] = merge(def, value);
+        const res: Record<string, unknown> = {};
+        Object.entries(def).forEach(([k, v]) => {
+          // required for fixing a bug with inputs referencing object fields
+          const multiplier = 1e2;
+          res[k] = (value[k] ?? v) * multiplier;
+        });
+        all[field] = res;
       }
     });
 }

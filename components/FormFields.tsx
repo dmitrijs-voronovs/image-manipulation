@@ -33,7 +33,7 @@ export const FormFields: FC<{
                   name={[name, "0"]}
                   key={switchValue.label}
                   config={switchValue}
-                  value={filterValue?.[0] || switchValue.default}
+                  value={filterValue?.[0] ?? switchValue.default}
                 />
                 {valuesToRender.map((v, i) => {
                   return (
@@ -45,7 +45,7 @@ export const FormFields: FC<{
                       value={
                         isSimpleValue
                           ? filterValue?.[1]?.[0]
-                          : filterValue?.[1]?.[0]?.[i] || v.default
+                          : filterValue?.[1]?.[0]?.[i] ?? v.default
                       }
                     />
                   );
@@ -63,7 +63,7 @@ export const FormFields: FC<{
                     name={[name, String(i)]}
                     key={v.label || i}
                     config={v}
-                    value={filterValue?.[i] || v.default}
+                    value={filterValue?.[i] ?? v.default}
                   />
                 );
               })}
@@ -71,7 +71,8 @@ export const FormFields: FC<{
           );
         }
 
-        if (!("default" in fieldConfig)) {
+        const isObject = !("default" in fieldConfig);
+        if (isObject) {
           return (
             <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
               {Object.entries(fieldConfig).map(([k, v]) => {
@@ -81,7 +82,7 @@ export const FormFields: FC<{
                     name={[name, k]}
                     key={k}
                     config={v}
-                    value={filterValue?.[k] || v.default}
+                    value={filterValue?.[k] ?? v.default}
                   />
                 );
               })}

@@ -38,12 +38,7 @@ import {
   filterArgLayerConfig,
   filterArgMainConfig,
 } from "../config/filterArgConfig";
-
-const { Title } = Typography;
-import {
-  BASE_LAYER_IDX,
-  DEFAULT_N_OF_ADDITIONAL_LAYERS,
-} from "./utils/layerConfig";
+import { BASE_LAYER_IDX } from "./utils/layerConfig";
 import { ImageData } from "./utils/imageConfig";
 import { UserValues } from "./ImageEditor";
 import { saveNumberOfLayers } from "../store/layers";
@@ -139,7 +134,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
     saveNumberOfLayers(addtionalLayers);
   };
 
-  const onChange = (val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
+  const onChange = (_val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
     convertFormValuesToConfig(all);
     onFinish(all);
   };
@@ -154,9 +149,6 @@ export const ParameterForm: FC<ParameterFormProps> = ({
       >
         <Divider orientation={"center"}>Filter configuration</Divider>
 
-        {/*<Title level={3} style={{ textAlign: "center" }}>*/}
-        {/*  Filter configuration*/}
-        {/*</Title>*/}
         <FormFields
           optionConfig={filterArgMainConfig}
           userValues={layerValues}
@@ -164,17 +156,12 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         {layerIdx !== BASE_LAYER_IDX && (
           <>
             <Divider orientation={"center"}>Layer configuration</Divider>
-            {/*<Title level={3} style={{ textAlign: "center" }}>*/}
-            {/*  Layer configuration*/}
-            {/*</Title>*/}
             <FormFields
               optionConfig={filterArgLayerConfig}
               userValues={layerValues}
             />
           </>
         )}
-        {/*TODO: utilize row + col layout*/}
-        {/*<Form.Item {...tailLayout}>*/}
         <Divider orientation={"center"}>Actions</Divider>
         <Form.Item label={"Layers"}>
           <Space wrap size={"middle"}>

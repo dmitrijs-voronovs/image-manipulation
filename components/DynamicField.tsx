@@ -1,12 +1,11 @@
 import { FC } from "react";
 import {
-  FilterArgPrimitive,
   FilterArgBool,
   FilterArgNumber,
+  FilterArgPrimitive,
   FilterArgString,
 } from "../config/filters";
 import { Form, Input, Select, Slider, Switch } from "antd";
-import { filterArgConfig } from "../config/filterArgConfig";
 import { Option } from "rc-select";
 
 export const DynamicField: FC<{
@@ -15,7 +14,6 @@ export const DynamicField: FC<{
   config: FilterArgPrimitive;
   value: unknown;
 }> = ({ name, config, value, label }) => {
-  // const config = filterArgConfig[label];
   if (typeof config.default === "boolean") {
     return (
       <Form.Item name={name} label={label}>
@@ -63,9 +61,6 @@ export const DynamicField: FC<{
     const max = (config as FilterArgNumber).max;
     const min = (config as FilterArgNumber).min;
     const step = (config as FilterArgNumber).step || max / 100;
-    // const marks = Array.from({length: max / 10}).map((a,i) => {
-    //
-    // })
     const total = min > max ? min - max : max - min;
     const markCount = 10;
     const markStep = total / markCount;
@@ -82,7 +77,7 @@ export const DynamicField: FC<{
         <Slider
           min={min}
           max={max}
-          defaultValue={Number(value) || (config as FilterArgNumber).default}
+          defaultValue={Number(value) ?? (config as FilterArgNumber).default}
           step={step}
           marks={marks}
         />
