@@ -15,29 +15,29 @@ export const ImageGallery: FC<ImageGalleryProps> = ({
   setImages,
 }) => {
   return (
-    <Space direction={"vertical"}>
-      <Space wrap>
+    <Space direction={"vertical"} size={"middle"}>
+      <Space size={"middle"}>
+        <FileUploadButton onFileLoaded={(files) => setImages(files)} />
+        <Button onClick={() => setImages(defaultImages)}>
+          Reset to default images
+        </Button>
+      </Space>
+      <Space style={{ marginBottom: "15px" }} wrap>
         {images.map((img) => {
           return (
             <Button
               key={img.name}
               onClick={() => changeImage(img)}
-              style={{ width: 100, height: 100, margin: 0, padding: 5 }}
+              style={{ width: 100, height: 100, margin: 0, padding: 0 }}
             >
               <img
-                style={{ width: 90, height: 90 }}
+                style={{ width: 100, height: 100, objectFit: "cover" }}
                 alt={img.name}
                 src={img.src}
               />
             </Button>
           );
         })}
-      </Space>
-      <Space>
-        <FileUploadButton onFileLoaded={(files) => setImages(files)} />
-        <Button onClick={() => setImages(defaultImages)}>
-          Reset to default images
-        </Button>
       </Space>
     </Space>
   );

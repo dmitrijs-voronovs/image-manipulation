@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CamanInstance } from "../types/Caman";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Col, Row, Space } from "antd";
+import { Col, Divider, Row, Space } from "antd";
 import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
@@ -115,6 +115,7 @@ export function ImageEditor() {
           height: "100%",
           alignItems: "center",
           justifyContent: "center",
+          pointerEvents: "none",
         }}
       >
         {isLoading && (
@@ -123,24 +124,16 @@ export function ImageEditor() {
           </div>
         )}
       </div>
-      <Row
-        style={{ width: "100%" }}
-        align={"middle"}
-        justify={"center"}
-        gutter={48}
-      >
-        <Col
-          xs={24}
-          sm={12}
+      <div style={{ display: "flex" }}>
+        <div
           style={{
-            position: "sticky",
-            top: 20,
-            padding: 10,
-            alignSelf: "flex-start",
+            flex: "0 0 50%",
+            height: "100vh",
+            padding: "15px",
           }}
         >
           {currentImage ? (
-            <Space key={"canvas"} direction={"horizontal"}>
+            <Space key={"canvas"} direction={"vertical"} size={"middle"}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={currentImage.src} width={300} alt={currentImage.name} />
               <canvas id={canvasId} />
@@ -149,17 +142,36 @@ export function ImageEditor() {
             <Space
               key={"empty"}
               direction={"vertical"}
-              style={{ textAlign: "center", top: "40%", fontSize: "1.2rem" }}
+              style={{
+                fontSize: "1.2rem",
+                width: "100%",
+                height: "100%",
+                position: "relative",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
               <p>
-                Please select an image below or
+                Please select an image on the right
                 <br />
                 or upload custom images
               </p>
             </Space>
           )}
-        </Col>
-        <Col xs={24} sm={12}>
+        </div>
+        <div
+          style={{
+            flex: "0 1 50%",
+            overflowY: "scroll",
+            height: "100vh",
+            width: "50%",
+            position: "absolute",
+            right: "0",
+            top: "0",
+            padding: "0 15px",
+            background: "#fffcf5e0",
+          }}
+        >
           <ParameterForm
             downloadImgButtonRef={downloadImgButtonRef}
             images={images}
@@ -172,15 +184,14 @@ export function ImageEditor() {
             additionalLayerCount={additionalLayerCount}
             setAdditionalLayerCount={setAdditionalLayerCount}
           />
-        </Col>
-        <Col span={24} style={{ flexWrap: "wrap" }}>
+          <Divider orientation={"center"}>Images</Divider>
           <ImageGallery
             images={images}
             setImages={setImages}
             changeImage={changeImage}
           />
-        </Col>
-      </Row>
+        </div>
+      </div>
     </div>
   );
 }

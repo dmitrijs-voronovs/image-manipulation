@@ -175,7 +175,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         {/*<Form.Item {...tailLayout}>*/}
         <Divider orientation={"center"}>Actions</Divider>
         <Form.Item label={"Layers"}>
-          <Space wrap>
+          <Space wrap size={"middle"}>
             <Radio.Group
               onChange={(e) => setLayerIdx(e.target.value)}
               value={layerIdx}
@@ -208,7 +208,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         </Form.Item>
         {Object.keys(configs).length ? (
           <Form.Item label={"Apply saved configs"}>
-            <Space wrap>
+            <Space wrap size={"middle"}>
               {Object.entries(configs).map(([name, config]) => (
                 <Button
                   key={name}
@@ -225,7 +225,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
           </Form.Item>
         ) : null}
         <Form.Item label={"Config actions"}>
-          <Space wrap>
+          <Space wrap size={"middle"}>
             <Button onClick={showModal}>Save</Button>
             <Button
               onClick={async () => {
@@ -279,12 +279,12 @@ export const ParameterForm: FC<ParameterFormProps> = ({
                 }
               }}
             >
-              Delete all saved
+              Delete all
             </Button>
           </Space>
         </Form.Item>
         <Form.Item label={"Image download"}>
-          <Space wrap>
+          <Space wrap size={"middle"}>
             <Button>
               <a ref={downloadImgButtonRef}>Download</a>
             </Button>
@@ -324,7 +324,9 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         </p>
         <p>Layer configuration:</p>
         <Typography.Text>
-          <pre>{JSON.stringify(layerValues, null, 2)}</pre>
+          <pre style={{ overflowX: "scroll", maxHeight: "300px" }}>
+            {JSON.stringify(layerValues, null, 2)}
+          </pre>
         </Typography.Text>
       </Modal>
     </>
