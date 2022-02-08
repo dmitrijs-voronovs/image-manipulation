@@ -3,6 +3,8 @@
 Powerful image editor written on `React` + `TS` that allows to store custom filter configurations, upload images, process them and download in bulk.\
 Written on top of [caman.js](http://camanjs.com/).
 
+[Demo](https://image-manipulation-eight.vercel.app/)
+
 ## Examples
 ### Main View
 ![image](https://user-images.githubusercontent.com/53301511/152890252-45232b92-ce63-4c61-bfb4-662d682dfc7b.png)
