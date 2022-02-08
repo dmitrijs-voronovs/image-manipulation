@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CamanInstance } from "../types/Caman";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Col, Divider, Row, Space } from "antd";
+import { Divider, Space } from "antd";
 import { ParameterForm } from "./ParameterForm";
 import { ImageGallery } from "./ImageGallery";
 import { editImage } from "./utils/editImage";
@@ -12,6 +12,7 @@ import {
   getInitialUserConfig,
 } from "./utils/layerConfig";
 import { defaultImages, ImageData } from "./utils/imageConfig";
+import { getNumberOfLayers } from "../store/layers";
 
 const canvasId = "target";
 
@@ -21,6 +22,11 @@ export function ImageEditor() {
   const [additionalLayerCount, setAdditionalLayerCount] = useState(
     DEFAULT_N_OF_ADDITIONAL_LAYERS
   );
+
+  useEffect(() => {
+    setAdditionalLayerCount(getNumberOfLayers());
+  }, []);
+
   const [userValues, setUserValues] = useState<UserValues>(
     getInitialUserConfig(additionalLayerCount)
   );

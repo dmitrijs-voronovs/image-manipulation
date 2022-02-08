@@ -46,6 +46,7 @@ import {
 } from "./utils/layerConfig";
 import { ImageData } from "./utils/imageConfig";
 import { UserValues } from "./ImageEditor";
+import { saveNumberOfLayers } from "../store/layers";
 
 export const formLayout = {
   labelCol: { span: 4 },
@@ -135,6 +136,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
   const handleAddLayersClick = (e: { key: string }) => {
     const addtionalLayers = Number(e.key);
     setAdditionalLayerCount(addtionalLayers);
+    saveNumberOfLayers(addtionalLayers);
   };
 
   const onChange = (val: Partial<ValueConfig>, all: Partial<ValueConfig>) => {
