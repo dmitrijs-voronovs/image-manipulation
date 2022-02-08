@@ -116,6 +116,7 @@ export function ImageEditor() {
           alignItems: "center",
           justifyContent: "center",
           pointerEvents: "none",
+          zIndex: 99,
         }}
       >
         {isLoading && (
