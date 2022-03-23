@@ -8,13 +8,17 @@ import {
 import { Form, Input, Select, Slider, Switch } from "antd";
 import { Option } from "rc-select";
 import { getSliderMarks } from "./utils/getSliderMarks";
+import { Label } from "./Label";
 
 export const DynamicField: FC<{
   name: string | string[];
   label: string;
   config: FilterArgPrimitive;
   value: unknown;
-}> = ({ name, config, value, label }) => {
+  showHint?: boolean;
+}> = ({ name, config, value, label: labelRaw, showHint = false }) => {
+  const label = showHint ? <Label name={name as string} /> : labelRaw;
+
   if (typeof config.default === "boolean") {
     return (
       <Form.Item name={name} label={label}>

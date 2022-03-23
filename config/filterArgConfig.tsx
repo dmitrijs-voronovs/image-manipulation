@@ -133,7 +133,7 @@ export const filterArgMainConfig: MainFilters = {
     [
       {
         min: 0,
-        max: 255,
+        max: 50,
         default: 0,
         step: 1,
         label: "value",
