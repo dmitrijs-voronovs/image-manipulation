@@ -7,6 +7,7 @@ import {
 } from "../config/filters";
 import { Form, Input, Select, Slider, Switch } from "antd";
 import { Option } from "rc-select";
+import { getSliderMarks } from "./utils/getSliderMarks";
 
 export const DynamicField: FC<{
   name: string | string[];
@@ -61,17 +62,7 @@ export const DynamicField: FC<{
     const max = (config as FilterArgNumber).max;
     const min = (config as FilterArgNumber).min;
     const step = (config as FilterArgNumber).step || max / 100;
-    const total = min > max ? min - max : max - min;
-    const markCount = 10;
-    const markStep = total / markCount;
-    const marks = Array.from({ length: markCount - 1 }).reduce<
-      Record<string, string>
-    >((acc, _, i) => {
-      const relativeMarker = markStep * (i + 1);
-      const marker = min < 0 ? relativeMarker + min : relativeMarker - min;
-      acc[marker] = String(marker);
-      return acc;
-    }, {});
+    const marks = getSliderMarks(min, max);
     return (
       <Form.Item name={name} label={label}>
         <Slider

@@ -13,12 +13,32 @@ import {
 } from "./utils/layerConfig";
 import { defaultImages, ImageData } from "./utils/imageConfig";
 import { getNumberOfLayers } from "../store/layers";
+import { setTargetImageScale } from "./utils/setTargetImageScale";
+import { getTargetImageScale } from "../store/targetImageScale";
 
-const canvasId = "target";
+export const canvasId = "target";
 
 export type UserValues = Partial<ValueConfig>[];
 
+function useScrollToBottom() {
+  const scrollableContainerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setTimeout(() => {
+      const container = scrollableContainerRef.current;
+      if (container) {
+        container.scroll({
+          top: container.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 1000);
+  }, []);
+  return scrollableContainerRef;
+}
+
 export function ImageEditor() {
+  const scrollableContainerRef = useScrollToBottom();
+
   const [additionalLayerCount, setAdditionalLayerCount] = useState(
     DEFAULT_N_OF_ADDITIONAL_LAYERS
   );
@@ -105,9 +125,10 @@ export function ImageEditor() {
     setCurrentImage(newImg);
   }
 
-  // when image changes, apply effects from config
+  // when image changes, apply effects from config, apply chosen image scale
   useEffect(() => {
     handleButtonClick();
+    setTargetImageScale(getTargetImageScale());
   }, [currentImage, handleButtonClick]);
 
   return (
@@ -167,6 +188,7 @@ export function ImageEditor() {
           )}
         </div>
         <div
+          ref={scrollableContainerRef}
           style={{
             flex: "0 1 50%",
             overflowY: "scroll",
