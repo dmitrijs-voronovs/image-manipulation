@@ -9,6 +9,7 @@ import {
 } from "../config/filters";
 import { isValWithSwitch } from "./utils/isValWithSwitch";
 import { Form } from "antd";
+import { Label } from "./Label";
 
 export const FormFields: FC<{
   userValues: Partial<ValueConfig>;
@@ -27,7 +28,10 @@ export const FormFields: FC<{
               ? [values]
               : values) as unknown as FilterArgPrimitive[];
             return (
-              <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
+              <Form.Item
+                label={<Label name={name} />}
+                wrapperCol={{ offset: 1, span: 17 }}
+              >
                 <DynamicField
                   label={switchValue.label!}
                   name={[name, "0"]}
@@ -55,7 +59,10 @@ export const FormFields: FC<{
           }
 
           return (
-            <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
+            <Form.Item
+              label={<Label name={name} />}
+              wrapperCol={{ offset: 1, span: 17 }}
+            >
               {(fieldConfig as FilterArgPrimitive[]).map((v, i) => {
                 return (
                   <DynamicField
@@ -74,7 +81,10 @@ export const FormFields: FC<{
         const isObject = !("default" in fieldConfig);
         if (isObject) {
           return (
-            <Form.Item label={name} wrapperCol={{ offset: 1, span: 17 }}>
+            <Form.Item
+              label={<Label name={name} />}
+              wrapperCol={{ offset: 1, span: 17 }}
+            >
               {Object.entries(fieldConfig).map(([k, v]) => {
                 return (
                   <DynamicField
@@ -92,6 +102,7 @@ export const FormFields: FC<{
 
         return (
           <DynamicField
+            showHint
             key={name}
             label={name}
             name={name}
