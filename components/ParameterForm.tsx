@@ -42,6 +42,8 @@ import { BASE_LAYER_IDX } from "./utils/layerConfig";
 import { ImageData } from "./utils/imageConfig";
 import { UserValues } from "./ImageEditor";
 import { saveNumberOfLayers } from "../store/layers";
+import { ImageScaleSlider } from "./ImageScaleSlider";
+import { setTargetImageScale } from "./utils/setTargetImageScale";
 
 export const formLayout = {
   labelCol: { span: 4 },
@@ -288,6 +290,9 @@ export const ParameterForm: FC<ParameterFormProps> = ({
               Download All
             </Button>
           </Space>
+        </Form.Item>
+        <Form.Item key={"target-image-scale"} label={"Target image scale"}>
+          <ImageScaleSlider onAfterChange={setTargetImageScale} />
         </Form.Item>
       </Form>
       <Modal
