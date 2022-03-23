@@ -152,6 +152,7 @@ export const ParameterForm: FC<ParameterFormProps> = ({
         <Divider orientation={"center"}>Filter configuration</Divider>
 
         <FormFields
+          showHints
           optionConfig={filterArgMainConfig}
           userValues={layerValues}
         />
