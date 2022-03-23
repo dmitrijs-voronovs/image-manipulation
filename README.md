@@ -10,10 +10,17 @@ Written on top of [caman.js](http://camanjs.com/).
 ![image](https://user-images.githubusercontent.com/53301511/152890252-45232b92-ce63-4c61-bfb4-662d682dfc7b.png)
 ### Configurations
 Common layer configurations support many filters including brightness, contrast, exposure, noise, etc.
+
 ![image](https://user-images.githubusercontent.com/53301511/152890394-c6ee3b42-5152-4193-9e97-b3960c3ad8cd.png)
+#### Configuration hints
+Each base configuration has before / after hint that representes the applied filter. 
+
+![image](https://user-images.githubusercontent.com/53301511/159764466-fbf8d585-536a-435f-8008-8139d3158bde.png)
+
 ### Layer configurations
 Layer specific configurations, that are applied on top of the base layer
 ![image](https://user-images.githubusercontent.com/53301511/152890495-3dee2113-1bf5-43b1-a73e-882714cd9c39.png)
+
 ### Actions
 Include:
 * Adding / removing additional layers
@@ -23,7 +30,9 @@ Include:
 * Resetting current layer's configuration / configuration of every level
 * Copy / Past actions for layer configurations
 * Automatic image downloading with applied effects 
-![image](https://user-images.githubusercontent.com/53301511/152890542-ec19caa3-17be-4d0c-b0b6-0279089fa7e1.png)
+* Target image display scale
+
+![image](https://user-images.githubusercontent.com/53301511/159763618-ca2c6409-8b05-4b86-9acd-168f752363f7.png)
 #### Save layer configuration view
 ![image](https://user-images.githubusercontent.com/53301511/152891038-996160f2-3e28-4c49-8dba-5e16e60a82e8.png)
 ### Custom image upload
